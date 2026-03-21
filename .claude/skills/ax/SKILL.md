@@ -458,12 +458,12 @@ team-architecture.json을 Read하고 다음을 확인합니다:
 2. **frontmatter 커스터마이즈**:
    - `name` → 도메인 맞춤 kebab-case 이름 (예: `content-generator`, `data-analyst`)
    - `description` → 도메인 맞춤 설명 (역할 + 언제 사용하는지 포함)
-   - `model` → 전체 모델 ID 사용 (`claude-sonnet-4-6`, `claude-opus-4-6`, `claude-haiku-4-5`)
+   - `model` → 유효한 모델 ID만 사용: `claude-sonnet-4-6`, `claude-opus-4-6`, `claude-haiku-4-5` (구 ID인 claude-sonnet-4-5, claude-opus-4-5 등은 사용 금지 — validate_project.py에서 FAIL 처리됨)
    - `tools` → 역할에 필요한 도구만 (executor: 전체, reviewer: Read/Grep/Glob만)
    - `role` → team-architecture에서 결정된 역할
-   - `triggers` → 도메인 특화 키워드
+   - `triggers` → 도메인 특화 키워드 (비어있으면 안 됨 — 최소 3개 키워드 포함)
 
-3. **본문 커스터마이즈** (복사 후 수정, 원본 보존):
+3. **본문 커스터마이즈** (XML 태그 필수 — `## Role` 같은 마크다운 헤더 사용 금지):
    - `<Role>` → 도메인 특화 미션, 책임/비책임 범위
    - `<Success_Criteria>` → 도메인 특화 완료 조건
    - `<Constraints>` → 도메인 특화 제약사항

@@ -6,6 +6,13 @@ tools: {AGENT_TOOLS}
 role: {AGENT_ROLE}
 triggers: {AGENT_TRIGGERS}
 ---
+<!-- 필수 규칙:
+  1. model은 반드시 다음 중 하나: claude-sonnet-4-6 | claude-opus-4-6 | claude-haiku-4-5
+     (claude-sonnet-4-5, claude-opus-4-5 등 구 ID 사용 금지)
+  2. triggers는 반드시 비어있지 않은 값으로 채울 것 (예: "코드 리뷰, 보안 검토")
+  3. 본문 섹션은 반드시 XML 태그(<Role>, </Role>)를 사용할 것
+     (## Role 같은 마크다운 헤더 사용 금지 — validate_project.py가 XML 태그만 검출)
+-->
 
 # {AGENT_DISPLAY_NAME}
 
