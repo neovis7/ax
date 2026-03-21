@@ -2,13 +2,39 @@
 
 > `--execute` 플래그가 없으면 이 Phase를 건너뜁니다.
 
+## 7.0 진행 상태 추적
+
+Phase 7 실행 중 각 단계마다 진행 상태를 사용자에게 표시합니다.
+
+**표시 형식:**
+```
+━━━ Phase 7 실행 진행 ━━━
+[1/N] visual-architect — 디자인 토큰 생성 중...
+[2/N] {에이전트명} — {작업 설명}...
+[3/N] {에이전트명} — {작업 설명}...
+...
+[N/N] visual-qa — 시각 품질 평가 중... → {score}/60 {PASS/FAIL}
+━━━ 완료 ━━━
+```
+
+**구현 방법:**
+1. team-architecture.json의 `agents` 배열에서 실행 순서 결정
+2. 각 에이전트 호출 전에 `[순번/총수] 에이전트명 — 작업 설명...` 출력
+3. 에이전트 완료 후 결과 요약 (성공/실패/산출물 경로) 출력
+4. 전체 완료 시 요약 보고
+
+**TaskCreate 연동:**
+- 각 에이전트 실행을 개별 Task로 등록하여 진행 추적
+- `TaskCreate("에이전트명: 작업 설명")` → 실행 시작 시 `in_progress` → 완료 시 `completed`
+
 ## 7.1 실행 준비
 
 Phase 1~6에서 생성된 에이전트 팀으로 도메인 작업을 즉시 수행합니다.
 
 1. `.omc/ax/domain-analysis.json`에서 `domain_description` 확인
-2. `.omc/ax/team-architecture.json`에서 에이전트 팀 구성 확인
+2. `.omc/ax/team-architecture.json`에서 에이전트 팀 구성 확인 + 실행 순서 결정
 3. `${PROJECT_DIR}/CLAUDE.md`의 위임 규칙 확인
+4. 실행할 에이전트 수(N) 산출 → 진행 추적 초기화
 
 ## 7.2 시각화 파이프라인 실행
 
