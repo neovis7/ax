@@ -7,9 +7,10 @@ ax가 자동으로 적합한 스킬을 추천하고, 자동 적용 티어 스킬
 
 ## 자동 적용 티어 (Auto-Apply Tier)
 
-다음 조건이 모두 충족되면 해당 스킬의 핵심 원칙을 **자동으로** homepage-builder 에이전트 프롬프트에 주입합니다:
-- `domain_type` = creative 또는 document
-- `output_format` = html
+다음 조건 중 하나 이상 충족 시 해당 스킬의 핵심 원칙을 **자동으로** frontend-developer/homepage-builder 에이전트 프롬프트에 주입합니다:
+- `domain_type` = creative 또는 document + `output_format` = html
+- `domain_sub_type` = fullstack (프론트엔드 UI 포함 풀스택 프로젝트)
+- 인터뷰에서 사용자가 디자인 스킬 적용을 선택한 경우
 - `--design none` 플래그가 **없을** 때
 
 자동 적용 스킬의 콘텐츠는 GitHub에서 fetch하여 Phase 7 에이전트 프롬프트에 주입합니다.
@@ -50,6 +51,20 @@ ax가 자동으로 적합한 스킬을 추천하고, 자동 적용 티어 스킬
 | 스킬 | 설치 방법 | 용도 |
 |------|----------|------|
 | agent-skills | `claude plugins add vercel-labs/agent-skills` | Vercel 에이전트 스킬 |
+
+---
+
+## visual-architect 추가 제약 (Tailwind v4 프로젝트)
+
+CSS 커스텀 변수 이름은 Tailwind v4 내장 변수와 충돌 금지:
+
+```
+금지 접두사: --spacing-*, --color-*, --font-*, --text-*, --shadow-*, --radius-*, --container-*
+안전한 접두사: --app-*, --brand-*, --ds-*, 프로젝트명 접두사 (--fda-* 등)
+```
+
+Tailwind v4 프로젝트 감지: `tailwind.config.ts` 또는 `@import "tailwindcss"` 패턴 존재 시 자동 적용.
+visual-architect 에이전트 프롬프트에 위 블랙리스트를 제약사항으로 주입합니다.
 
 ---
 

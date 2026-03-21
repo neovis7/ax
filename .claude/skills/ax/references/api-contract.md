@@ -75,6 +75,40 @@ export const GetSessionResponseSchema = z.discriminatedUnion("status", [
  */
 ```
 
+## @source 어노테이션 (v2)
+
+각 API 스키마의 필드에 데이터 출처를 명시합니다:
+
+| 어노테이션 | 의미 | 예시 |
+|-----------|------|------|
+| `@source body` | 요청 바디에서 전달 | email, password |
+| `@source params` | URL 경로 파라미터 | :id, :sessionId |
+| `@source query` | URL 쿼리 파라미터 | ?page=1&limit=20 |
+| `@source cookie` | 쿠키에서 추출 | auth_token |
+| `@source server` | 서버에서 자동 생성 | timestamp, userId (JWT에서) |
+
+**URL params 자동 주입 규칙:**
+
+URL params 필드가 Zod 스키마에 포함된 경우:
+- API 라우트에서 URL params를 body에 자동 주입:
+  ```typescript
+  const parsed = Schema.safeParse({ ...(body as object), sessionId });
+  ```
+- 프론트엔드는 `@source params` 필드를 요청 바디에 포함하지 않음
+
+**예시:**
+```typescript
+/**
+ * POST /quiz/sessions/:sessionId/submit
+ * @source params sessionId
+ * @source body answers
+ */
+export const SubmitSessionBodySchema = z.object({
+  sessionId: z.string().uuid(), // @source params — URL에서 자동 주입
+  answers: z.array(AnswerSchema), // @source body
+});
+```
+
 **컬럼명 일치 규칙:**
 
 API 스키마의 필드명은 DB 스키마의 컬럼명과 매핑을 명시합니다:

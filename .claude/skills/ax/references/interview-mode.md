@@ -44,9 +44,14 @@
    → 정확도 / 속도 / 보안 / 사용성 중 우선순위
 ```
 
-### Phase A-2: 디자인 스킬 선택 (output_format=html일 때)
+### Phase A-2: 디자인 스킬 선택 (프론트엔드 UI가 포함된 모든 프로젝트)
 
-`output_format`이 html인 경우 (홈페이지, 랜딩페이지, 프레젠테이션 등), 다음 질문을 추가합니다:
+프론트엔드 UI가 포함된 프로젝트에서 디자인 스킬 질문을 표시합니다:
+- `output_format=html` (홈페이지, 랜딩페이지, 프레젠테이션 등)
+- `domain_sub_type=fullstack` (풀스택 웹 앱)
+- `domain_type=creative` (크리에이티브 도메인)
+
+다음 질문을 추가합니다:
 
 ```
 5) 디자인 스타일: "어떤 디자인 품질 수준을 원하시나요?"
@@ -71,7 +76,7 @@
 - 컨텍스트 파일: .omc/ax/design-skill-context.md (있으면)
 ```
 
-**output_format이 html이 아닌 경우** (code, dashboard 등): 이 질문을 건너뜁니다.
+**프론트엔드 UI가 없는 경우** (api-only, cli, data-pipeline 등): 이 질문을 건너뜁니다.
 
 ---
 

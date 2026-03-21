@@ -326,6 +326,20 @@ Glob("~/.claude/agents/*.md")
 병렬 에이전트 간 API 응답 구조 불일치를 방지하기 위해 공유 Zod 스키마 + 행동 의도(@intent) + 상태별 응답 변형을 사전 정의합니다.
 생성 파일: `${PROJECT_DIR}/src/types/api-contracts.ts`
 
+**@source 어노테이션 필수**: 각 스키마 필드에 데이터 출처를 명시합니다:
+- `@source body` — 요청 바디에서 전달 (email, password 등)
+- `@source params` — URL 경로 파라미터 (:id, :sessionId 등)
+- `@source query` — URL 쿼리 파라미터 (?page=1 등)
+- `@source cookie` — 쿠키에서 추출 (auth_token 등)
+- `@source server` — 서버에서 자동 생성 (timestamp, userId from JWT 등)
+
+URL params 필드가 Zod 스키마에 포함된 경우, API 라우트에서 URL params를 body에 자동 주입:
+```typescript
+const parsed = Schema.safeParse({ ...(body as object), sessionId });
+```
+프론트엔드는 `@source params` 필드를 요청 바디에 포함하지 않습니다.
+상세 규칙: Read `.claude/skills/ax/references/api-contract.md`
+
 ### 2.4.3 사용자 플로우 시나리오 정의 (code 도메인 — fullstack/api)
 
 > 적용 조건: `domain_sub_type`이 `fullstack` 또는 `api`이고, backend + frontend 에이전트가 병렬 실행될 때만.
@@ -495,6 +509,8 @@ team-architecture.json을 Read하고 다음을 확인합니다:
    - `<Process>` → 도메인 특화 워크플로우 단계
      + `.claude/skills/ax/templates/domain-patterns.md` 섹션 6 "도메인별 에이전트 프로세스 필수 단계"를 Read하고, 해당 도메인의 필수 단계를 <Process>에 반영
    - `<Anti_Patterns>` → domain-patterns.md 섹션 6의 도메인별 Anti_Patterns 힌트 적용
+     + backend-developer에 반드시 포함: "req.json() 직접 사용 금지, JWT expiresIn 숫자 사용 금지(문자열 '15m' 형식 사용), 환경변수 폴백값 금지(예: process.env.JWT_SECRET || 'secret'), 유틸리티 인라인 중복 금지, Fisher-Yates 셔플 정확 구현(i > 0 조건), Prisma adapter 패턴 필수"
+     + frontend-developer에 반드시 포함: "모든 API 데이터 접근에 ?. 필수, 배열 메서드 앞에 (data ?? []) 필수, useGet 이중 래핑 금지(useGet이 이미 ApiResponse.data를 추출함), 테스트 계정 자체 생성 금지(prisma/seed.ts에서 확인)"
    - `<Quality_Gates>` → 도메인 특화 품질 게이트 (검증 가능한 조건)
    - `<Collaboration>` → 선행/후행 에이전트 + 입출력 경로 명시
    - `<Tool_Usage>` → 허용된 도구별 사용 지침
