@@ -61,6 +61,13 @@
 
 9) 배포 환경: "어디에 배포할 계획인가요?"
    → Vercel, AWS, Docker, 로컬 등
+
+10) 인프라 서비스: "사용할 서비스가 정해져 있나요?"
+    → DB: Supabase / Neon / PlanetScale / SQLite
+    → 인증: Clerk / Auth0 / 자체 구현
+    → 결제: Stripe / 없음
+    → 스토리지: Vercel Blob / S3 / 없음
+    → 답변에 따라 pre-flight check 항목 자동 결정
 ```
 
 ### Phase C: 규제/안전 (safety 도메인 전용)
