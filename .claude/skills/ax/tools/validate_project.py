@@ -42,10 +42,21 @@ def validate_project(project_dir):
                 failures.append(f"frontmatter 누락: {os.path.basename(af)} -> {field}")
     checks['agent_frontmatter'] = 'PASS' if fm_ok else 'FAIL'
 
-    # 2. 에이전트 본문 구조
+    # 2. 에이전트 본문 구조 (대체 태그 허용)
     body_ok = True
     for af in agent_files:
-        missing = check_xml_tags(af, ['Role', 'Success_Criteria', 'Constraints'])
+        with open(af, 'r') as f:
+            body = f.read()
+        has_role = '<Role>' in body
+        has_criteria = '<Success_Criteria>' in body or '<Instructions>' in body or '<Context>' in body
+        has_constraints = '<Constraints>' in body or '<Rules>' in body or '<Anti_Patterns>' in body
+        missing = []
+        if not has_role:
+            missing.append('Role')
+        if not has_criteria:
+            missing.append('Success_Criteria or Instructions')
+        if not has_constraints:
+            missing.append('Constraints or Anti_Patterns')
         if missing:
             body_ok = False
             failures.append(f"XML 태그 누락: {os.path.basename(af)} -> {missing}")
