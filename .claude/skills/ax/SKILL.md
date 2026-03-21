@@ -504,14 +504,20 @@ team-architecture.json을 Read하고 다음을 확인합니다:
 각 에이전트를 `.claude/agents/{name}.md`에 Write.
 생성할 때마다 `.omc/ax/generation-log.json`의 `generated_files` 배열에 파일 경로를 추가.
 
-### 3.5 출력 계약 검증
+### 3.5 자동 후처리 + 출력 계약 검증
 
-생성된 .claude/agents/*.md 파일 각각을 확인:
+서브에이전트가 생성한 파일에서 반복 발생하는 문제를 자동 수정합니다. 사람이 수동 수정할 필요를 없앱니다.
+
+**자동 후처리 (검증 전 실행):**
+1. triggers 누락 → 에이전트 name/role에서 키워드 추출하여 자동 채움
+2. 모델 ID 교정 → `claude-sonnet-4-5` → `claude-sonnet-4-6` 등 구 ID 일괄 교체
+3. XML 태그 변환 → `## Role` 마크다운 헤더가 있으면 `<Role>` XML 태그로 변환
+
+**출력 계약 검증 (후처리 후):**
 - frontmatter에 name, description, model, role, triggers 필수 필드
-- 본문에 <Role>, <Success_Criteria>, <Constraints>, <Process>, <Examples> 존재
-- <Collaboration> 섹션에 선행/후행 에이전트 명시
-
-누락 항목이 있으면 해당 에이전트 파일만 재생성.
+- 본문에 `<Role>` 존재 (대체 태그 `<Instructions>`, `<Context>` 허용)
+- model 값이 유효한 ID인지 확인
+- 누락 항목이 있으면 해당 에이전트 파일만 재생성
 
 ## Phase 4: 스킬 생성 (v0.1 — 커스텀만)
 
