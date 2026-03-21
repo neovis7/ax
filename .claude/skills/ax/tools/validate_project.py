@@ -184,15 +184,25 @@ def validate_project(project_dir):
         if not has_trio:
             failures.append(f"시각화 체인 누락: {visual_trio - agent_names}")
 
-    # 10. 하드코딩 색상
+    # 10. 하드코딩 색상 (Example/Anti_Patterns 블록 내부는 허용)
     hardcoded = []
     for af in agent_files:
         with open(af, 'r') as f:
-            lines = f.readlines()
+            content_full = f.read()
+        lines = content_full.split('\n')
+        in_exempt_block = False
         for i, line in enumerate(lines, 1):
+            stripped = line.strip()
+            if any(tag in stripped for tag in ['<Good>', '<Bad>', '<Anti_Patterns>', '<Examples>']):
+                in_exempt_block = True
+            if any(tag in stripped for tag in ['</Good>', '</Bad>', '</Anti_Patterns>', '</Examples>']):
+                in_exempt_block = False
+                continue
+            if in_exempt_block:
+                continue
             if re.search(r'#[0-9a-fA-F]{6}', line):
-                in_example = any(kw in line for kw in ['<Good>', '<Bad>', 'Example', '예:', '출력:', 'Anti_Patterns', '대비', '미달', '하드코딩', '--color', 'Bad', 'style=', '부적합', '//'])
-                if not in_example:
+                in_line_exempt = any(kw in line for kw in ['예:', '출력:', '대비', '미달', '하드코딩', '--color', 'style=', '부적합', '//', 'Example'])
+                if not in_line_exempt:
                     hardcoded.append(f"{os.path.basename(af)}:{i}")
     checks['hardcoded_colors'] = 'PASS' if not hardcoded else 'FAIL'
     if hardcoded:
