@@ -6,7 +6,7 @@ description: >-
   "팀 구성", "agent team", "scaffold agents" 등을 요청하거나, 새 프로젝트를 위한
   에이전트/스킬 구조가 필요할 때 이 스킬을 사용하세요. 코딩, 리서치, 문서 작성,
   마케팅, 데이터 분석, 규제 준수 등 모든 도메인에 적용 가능합니다.
-argument-hint: '"도메인 설명" 또는 --here "도메인 설명" 또는 --execute "도메인 설명" 또는 --interview "도메인 설명"'
+argument-hint: '"도메인 설명" 또는 --here/--execute/--interview/--design {skill} 조합'
 ---
 
 # AX — Agent Team & Skill Architect
@@ -26,6 +26,8 @@ argument-hint: '"도메인 설명" 또는 --here "도메인 설명" 또는 --exe
 - `/ax --here "이커머스 플랫폼"` — 현재 디렉토리에 에이전트 생성
 - `/ax --execute "AI 리더십 슬라이드"` — 에이전트 팀 생성 + 즉시 실행
 - `/ax --interview "데이터 분석"` — 인터뷰 모드 (v1.0)
+- `/ax --design supanova --execute "홈페이지"` — supanova 디자인 스킬 적용 + 실행
+- `/ax --design none --execute "대시보드"` — 디자인 스킬 자동 적용 비활성화
 
 ## 실행 파이프라인
 
@@ -86,6 +88,11 @@ TaskCreate("Phase 7: 실행") # --execute 플래그 시에만
 - `--here` 플래그 존재 여부 확인 → 현재 디렉토리에 에이전트 생성
 - `--execute` 플래그 존재 여부 확인 → Phase 6 완료 후 Phase 7(실행) 진행
 - `--interview` 플래그 존재 여부 확인 → Phase 1에서 인터뷰 모드 실행
+- `--design {value}` 플래그 확인 → 디자인 스킬 선택:
+  - `--design supanova` → supanova-design 명시적 적용
+  - `--design frontend-design` → Anthropic frontend-design 적용
+  - `--design none` → 디자인 스킬 자동 적용 비활성화
+  - 플래그 없음 → creative/document + html 도메인이면 supanova-design 자동 적용
 - 나머지 텍스트를 도메인 설명으로 사용
 
 ### 1.0 프로젝트 디렉토리 결정
@@ -195,7 +202,8 @@ mkdir -p ${PROJECT_DIR}/tests/ax
   },
   "flags": {
     "execute": "{true|false}",
-    "here": "{true|false}"
+    "here": "{true|false}",
+    "design": "{supanova|frontend-design|none|auto}"
   }
 }
 ```
@@ -285,13 +293,28 @@ Glob("~/.claude/agents/*.md")
 - 도메인 동사/입출력과 기존 스킬 description 매칭
 - 매칭되지 않는 능력 → "커스텀 스킬 생성 대상"
 
-### 2.4.1 외부 스킬 추천 (v0.3)
+### 2.4.1 외부 스킬 추천 + 디자인 스킬 자동 적용 (v0.4)
 
-`.claude/skills/ax/templates/external-skill-catalog.md`를 Read하고, `domain_type`과 `output_format`에 따라 외부 스킬을 추천합니다:
+`.claude/skills/ax/templates/external-skill-catalog.md`를 Read하고 다음을 수행합니다:
 
+**A) 디자인 스킬 자동 적용 (Auto-Apply Tier):**
+
+`flags.design` 값에 따라 처리:
+- `"auto"` (기본값, 플래그 미지정): `domain_type`이 creative/document이고 `output_format`이 html이면 → supanova-design 자동 선택
+- `"supanova"` 또는 `"frontend-design"`: 해당 스킬 명시 선택
+- `"none"`: 디자인 스킬 적용 안 함
+
+선택된 디자인 스킬이 있으면:
+1. 카탈로그의 "자동 적용 티어" 섹션에서 해당 스킬의 GitHub URL 확인
+2. WebFetch로 SKILL.md 콘텐츠를 가져옴
+3. `${PROJECT_DIR}/.omc/ax/design-skill-context.md`에 저장
+4. Phase 3에서 homepage-builder 에이전트의 `<Process>` 섹션에 "design-skill-context.md를 Read하고 디자인 원칙을 적용하라" 지시를 추가
+5. Phase 7에서 homepage-builder 에이전트 프롬프트에 디자인 스킬 콘텐츠를 직접 주입
+
+**B) 일반 외부 스킬 추천:**
 1. 카탈로그의 "도메인별 추천 규칙" 참조
 2. 이미 설치된 스킬 제외 (Glob으로 `.claude/plugins/` 확인)
-3. 추천 목록을 완료 보고에 포함 (설치는 하지 않음 — 무중단 원칙)
+3. 추천 목록을 완료 보고에 포함
 4. 사용자가 나중에 수동 설치 가능
 
 ### 2.4.2 API 계약 생성 (code 도메인 — fullstack/api)
@@ -784,6 +807,26 @@ AX 에이전트 팀 생성 완료
 Phase 1~6에서 생성된 에이전트 팀으로 도메인 작업을 즉시 수행합니다.
 인터뷰 게이트에서 `docs/plan.md`, `docs/architecture.md`가 생성된 경우, 에이전트 실행 시 해당 문서를 컨텍스트로 주입합니다.
 순서: visual-architect(토큰) → 도메인 에이전트(콘텐츠) → visual-qa(검증, 45/60+ PASS)
+
+### 디자인 스킬 주입 (Phase 7에서 자동)
+
+`${PROJECT_DIR}/.omc/ax/design-skill-context.md`가 존재하면 (Phase 2.4.1에서 생성):
+
+1. **homepage-builder 에이전트** 프롬프트에 디자인 스킬 콘텐츠를 `## Supanova Design Engine Rules` 섹션으로 주입:
+   - "다음 디자인 규칙을 반드시 적용하세요. 이 규칙은 프로젝트의 디자인 품질 기준입니다."
+   - 디자인 스킬 콘텐츠 전체를 프롬프트에 포함
+
+2. **visual-architect 에이전트** 프롬프트에 디자인 스킬의 컬러/폰트 규칙만 발췌 주입:
+   - 금지 폰트 목록 (Inter, Roboto, Noto Sans KR 등)
+   - 권장 폰트 (Pretendard 등)
+   - 금지 색상 패턴 (보라색/AI 그라디언트)
+   - 금지 레이아웃 (3열 균등 카드)
+
+3. **visual-qa 에이전트** 프롬프트에 디자인 스킬의 안티패턴 체크리스트 주입:
+   - AI Tell 검사 항목 추가 (금지 폰트, 금지 레이아웃, 금지 색상)
+   - Pre-flight Checklist 항목 추가
+
+이 주입은 에이전트 정의 파일(.claude/agents/*.md)을 수정하는 것이 **아니라**, Phase 7 Agent 호출 시 프롬프트에 동적으로 추가하는 것입니다.
 
 ---
 

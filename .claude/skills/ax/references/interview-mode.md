@@ -44,6 +44,37 @@
    → 정확도 / 속도 / 보안 / 사용성 중 우선순위
 ```
 
+### Phase A-2: 디자인 스킬 선택 (output_format=html일 때)
+
+`output_format`이 html인 경우 (홈페이지, 랜딩페이지, 프레젠테이션 등), 다음 질문을 추가합니다:
+
+```
+5) 디자인 스타일: "어떤 디자인 품질 수준을 원하시나요?"
+
+   A) Supanova — $150k 에이전시 수준. Tailwind + Pretendard 폰트, 비대칭 레이아웃,
+      glass 네비게이션, spring 애니메이션, 실사 이미지. AI 느낌 완전 제거.
+   B) Standard — 기본 파이프라인. 커스텀 CSS, SVG 아이콘 중심, 깔끔하고 안정적.
+   C) 직접 지정 — 특정 디자인 스킬이나 참조 사이트가 있으면 알려주세요.
+```
+
+**선택 처리:**
+- A → `flags.design = "supanova"`, Phase 2.4.1에서 supanova SKILL.md를 WebFetch하여 `.omc/ax/design-skill-context.md`에 저장
+- B → `flags.design = "none"`, 기본 파이프라인 사용
+- C → 사용자 답변에서 스킬명 또는 URL 추출, `flags.design`에 기록
+
+**plan.md에 기록:**
+인터뷰 결과의 "기술 결정사항" 또는 "디자인 방향" 섹션에 선택된 디자인 스킬을 명시합니다:
+```markdown
+## 디자인 스킬
+- 적용 스킬: {supanova-design | standard | 사용자 지정}
+- 근거: {사용자 선택 이유}
+- 컨텍스트 파일: .omc/ax/design-skill-context.md (있으면)
+```
+
+**output_format이 html이 아닌 경우** (code, dashboard 등): 이 질문을 건너뜁니다.
+
+---
+
 ### Phase B: 기술 설계 (code 도메인 전용)
 
 ```
@@ -104,6 +135,10 @@
 - M1: {핵심 기능 그룹 1}
 - M2: {핵심 기능 그룹 2}
 - M3: {통합 + 검증}
+
+## 디자인 스킬 (html 출력 시)
+- 적용 스킬: {supanova-design | standard | 사용자 지정}
+- 컨텍스트 파일: {.omc/ax/design-skill-context.md 경로 또는 "없음"}
 
 ## 기술 결정사항
 {인터뷰 5~9번 답변 기반}
@@ -173,5 +208,18 @@ plan.md, architecture.md, user-flows.md가 생성되었습니다.
 - backend-developer → `docs/architecture.md` + `docs/user-flows.md` Read
 - frontend-developer → `docs/user-flows.md` + `docs/architecture.md` Read
 - 모든 에이전트 → `docs/plan.md`의 "기술 결정사항" 참조
+- **homepage-builder** → `.omc/ax/design-skill-context.md` Read (존재 시, 디자인 원칙 주입)
+- **visual-architect** → `.omc/ax/design-skill-context.md`에서 폰트/컬러 규칙 발췌 주입
+- **visual-qa** → `.omc/ax/design-skill-context.md`에서 안티패턴 체크리스트 주입
 
 이 방식으로 에이전트가 사용자의 의도를 정확히 반영한 결과물을 생성합니다.
+
+## 디자인 스킬과 --design 플래그의 관계
+
+| 상황 | 디자인 스킬 결정 |
+|------|----------------|
+| `--interview` + 질문 A-2 답변 | 인터뷰 답변이 최종 결정 |
+| `--design supanova` (명시적) | 인터뷰 질문 A-2를 건너뜀, 플래그 값 사용 |
+| `--design none` (명시적) | 인터뷰 질문 A-2를 건너뜀, 디자인 스킬 미적용 |
+| 인터뷰 없이 `--execute` (creative+html) | `flags.design=auto` → supanova 자동 적용 |
+| 인터뷰 없이 `--execute` (code) | 디자인 스킬 미적용 |
