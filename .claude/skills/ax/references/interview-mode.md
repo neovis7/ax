@@ -179,6 +179,18 @@ document + html                    → 레시피 3 (프레젠테이션): supanov
 
 **deer-flow 미설치 시**: 이 질문을 건너뛰고 html-slide-generator 스킬로 폴백합니다.
 
+**`--skip-interview` 시 자동 선택:**
+도메인 키워드에서 자동 매핑:
+- "테크/기술/AI/SaaS" → glassmorphism
+- "프리미엄/럭셔리/브랜드" → dark-premium
+- "스타트업/피치/투자" → gradient-modern
+- "경영/임원/보고" → keynote
+- "크리에이티브/에이전시/디자인" → neo-brutalist
+- "데이터/분석/통계" → minimal-swiss
+- 기본값 (매칭 없음) → gradient-modern
+
+이 매핑은 execution-policy.json의 ppt_style 필드에 기록됩니다.
+
 ---
 
 ### Phase B: 기술 설계 (code 도메인 전용)
