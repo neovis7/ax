@@ -44,39 +44,140 @@
    → 정확도 / 속도 / 보안 / 사용성 중 우선순위
 ```
 
-### Phase A-2: 디자인 스킬 선택 (프론트엔드 UI가 포함된 모든 프로젝트)
+### Phase A-2: 디자인 스킬 조합 선택 (프론트엔드 UI가 포함된 모든 프로젝트)
 
 프론트엔드 UI가 포함된 프로젝트에서 디자인 스킬 질문을 표시합니다:
 - `output_format=html` (홈페이지, 랜딩페이지, 프레젠테이션 등)
 - `domain_sub_type=fullstack` (풀스택 웹 앱)
 - `domain_type=creative` (크리에이티브 도메인)
 
-다음 질문을 추가합니다:
+도메인 분석 결과에 따라 최적의 레시피를 자동 매칭한 뒤, 사용자에게 확인합니다.
+
+**질문 5) 디자인 레시피:**
 
 ```
-5) 디자인 스타일: "어떤 디자인 품질 수준을 원하시나요?"
+5) 디자인 방향: "프로젝트에 맞는 디자인 조합을 추천합니다."
 
-   A) Supanova — $150k 에이전시 수준. Tailwind + Pretendard 폰트, 비대칭 레이아웃,
-      glass 네비게이션, spring 애니메이션, 실사 이미지. AI 느낌 완전 제거.
-   B) Standard — 기본 파이프라인. 커스텀 CSS, SVG 아이콘 중심, 깔끔하고 안정적.
-   C) 직접 지정 — 특정 디자인 스킬이나 참조 사이트가 있으면 알려주세요.
+   이 프로젝트는 {domain_type} + {output_format} 유형입니다.
+   추천 레시피: {자동 매칭된 레시피명}
+
+   A) 추천 레시피 적용 — {레시피 설명}
+      디자인 엔진: {supanova-design 또는 frontend-design}
+      품질 강화: {impeccable, taste-skill 등}
+      에셋: {better-icons 등}
+
+   B) 프리미엄 (Supanova) — $150k 에이전시 수준.
+      Tailwind + Pretendard 폰트, 비대칭 레이아웃, glass UI, spring 애니메이션.
+      + impeccable (꼼꼼한 마감) + better-icons (풍부한 아이콘)
+
+   C) Standard — 디자인 스킬 없이 기본 파이프라인 사용.
+      커스텀 CSS, SVG 아이콘 중심, 깔끔하고 안정적.
+
+   D) 직접 구성 — 스킬을 직접 선택하거나 참조 사이트를 알려주세요.
+```
+
+**레시피 자동 매칭 규칙:**
+```
+creative + html                    → 레시피 1 (프리미엄 랜딩): supanova + impeccable + better-icons
+creative + html + 마케팅/브랜딩     → 레시피 6 (마케팅): supanova + taste-skill + impeccable
+code + fullstack                   → 레시피 2 (풀스택): frontend-design + agent-skills + ui-skills
+code + fullstack + accuracy        → 레시피 4 (대시보드): frontend-design + better-icons + impeccable
+document + html                    → 레시피 3 (프레젠테이션): supanova + better-icons
+```
+
+**질문 6) 품질 보강 (D 선택 시에만):**
+
+```
+6) 추가 품질 스킬: "다음 중 추가로 적용할 스킬이 있나요? (복수 선택 가능)"
+
+   1) impeccable — 세부 UI 완성도 강화 (마감 품질)
+   2) taste-skill — 미적 판단력 강화 (감성적 검증)
+   3) make-interfaces-feel-better — 마이크로 인터랙션 (촉감적 개선)
+   4) better-icons — 풍부한 아이콘 에셋
+   5) ui-design-brain — UI 설계 의사결정 보조
+   6) 없음 — 디자인 엔진만 적용
+
+   ※ 충돌 안내: supanova와 frontend-design은 동시 사용 불가 (디자인 엔진 역할 충돌)
 ```
 
 **선택 처리:**
-- A → `flags.design = "supanova"`, Phase 2.4.1에서 supanova SKILL.md를 WebFetch하여 `.omc/ax/design-skill-context.md`에 저장
-- B → `flags.design = "none"`, 기본 파이프라인 사용
-- C → 사용자 답변에서 스킬명 또는 URL 추출, `flags.design`에 기록
+- A → 자동 매칭된 레시피의 필수+권장 스킬 모두 적용
+- B → `flags.design = "supanova"` + `flags.design_extras = ["impeccable", "better-icons"]`
+- C → `flags.design = "none"`, `flags.design_extras = []`
+- D → 질문 6으로 진행, 사용자 선택에 따라 `flags.design`과 `flags.design_extras` 설정
+  - 사용자가 참조 사이트 URL을 제공하면 `flags.design_reference`에 기록
+
+**충돌 자동 해결:**
+- 사용자가 supanova + frontend-design을 동시 선택 → "디자인 엔진은 하나만 선택 가능합니다. 어떤 것을 적용할까요?" 재질문
+- 사용자가 ui-ux-pro-max + ui-design-brain 동시 선택 → "의사결정 스킬은 하나만 권장합니다. 복잡한 UI면 ui-ux-pro-max를, 단순하면 ui-design-brain을 추천합니다."
 
 **plan.md에 기록:**
-인터뷰 결과의 "기술 결정사항" 또는 "디자인 방향" 섹션에 선택된 디자인 스킬을 명시합니다:
+인터뷰 결과의 "기술 결정사항" 또는 "디자인 방향" 섹션에 선택된 디자인 조합을 명시합니다:
 ```markdown
-## 디자인 스킬
-- 적용 스킬: {supanova-design | standard | 사용자 지정}
-- 근거: {사용자 선택 이유}
+## 디자인 스킬 조합
+- 적용 레시피: {레시피명 또는 "사용자 직접 구성"}
+- 디자인 엔진: {supanova-design | frontend-design | none}
+- 품질 강화: {적용된 보강 스킬 목록}
+- 에셋: {적용된 에셋 스킬 목록}
+- 근거: {사용자 선택 이유 또는 자동 매칭 근거}
 - 컨텍스트 파일: .omc/ax/design-skill-context.md (있으면)
+- 시너지 효과: {적용된 조합의 시너지 설명}
 ```
 
+**Phase 2.4.1 연동:**
+인터뷰에서 선택된 스킬 조합은 `flags.design`과 `flags.design_extras`로 전달됩니다:
+- `flags.design`: 디자인 엔진 (supanova | frontend-design | none | 사용자지정)
+- `flags.design_extras`: 추가 적용할 품질/에셋 스킬 배열 (예: ["impeccable", "better-icons"])
+- Phase 2.4.1에서 디자인 엔진은 WebFetch, extras는 설치 여부 확인 후 활성화/추천
+
 **프론트엔드 UI가 없는 경우** (api-only, cli, data-pipeline 등): 이 질문을 건너뜁니다.
+
+### Phase A-3: PPT 스타일 선택 (document+presentation 도메인)
+
+`domain_sub_type=presentation`이고 deer-flow(ppt-generation) 스킬이 설치되어 있을 때 표시합니다.
+
+```
+7) 프레젠테이션 스타일: "어떤 비주얼 스타일로 만들까요?"
+
+   프로젝트 유형에 맞는 추천 스타일을 안내합니다:
+
+   ┌────────────────────────────┬─────────────────────────────────┐
+   │ 프로젝트 유형               │ 추천 스타일                      │
+   ├────────────────────────────┼─────────────────────────────────┤
+   │ 테크 제품 발표              │ A) glassmorphism / C) gradient  │
+   │ 프리미엄/럭셔리 브랜드      │ B) dark-premium / F) editorial  │
+   │ 스타트업 피치               │ C) gradient-modern / G) minimal │
+   │ 경영진/임원 발표            │ B) dark-premium / H) keynote    │
+   │ 크리에이티브/에이전시        │ D) neo-brutalist / C) gradient  │
+   │ 데이터/분석 보고            │ G) minimal-swiss / E) isometric │
+   └────────────────────────────┴─────────────────────────────────┘
+
+   A) glassmorphism    — 프로스트 글래스, 블러 효과, 그라디언트 배경, 레이어 깊이감
+   B) dark-premium     — 블랙 배경, 발광 악센트, 글로우 효과, 럭셔리 미학
+   C) gradient-modern  — 볼드 메시 그라디언트, 유동적 전환, 현대적 타이포
+   D) neo-brutalist    — 로우 타이포, 하이 콘트라스트, 안티디자인, 멤피스 영감
+   E) 3d-isometric     — 클린 아이소메트릭, 플로팅 3D, 소프트 섀도
+   F) editorial        — 매거진 레이아웃, 드라마틱 포토, 정교한 타이포 계층
+   G) minimal-swiss    — 그리드 정밀, 볼드 여백, 타임리스 모더니즘
+   H) keynote          — Apple 스타일, 볼드 타이포, 시네마틱 이미지, 드라마틱
+
+   선택하세요 (A~H):
+```
+
+**선택 처리:**
+- 선택된 스타일을 `flags.ppt_style`에 기록
+- 프레젠테이션 플랜 JSON의 `style` 필드에 반영
+- slide-builder 에이전트 프롬프트에 스타일 가이드라인 주입
+
+**plan.md에 기록:**
+```markdown
+## 프레젠테이션 스타일
+- 적용 스타일: {glassmorphism | dark-premium | ... | keynote}
+- 근거: {사용자 선택 이유 또는 프로젝트 유형 기반 추천}
+- 스타일 특성: {해당 스타일의 1줄 설명}
+```
+
+**deer-flow 미설치 시**: 이 질문을 건너뛰고 html-slide-generator 스킬로 폴백합니다.
 
 ---
 
@@ -219,12 +320,28 @@ plan.md, architecture.md, user-flows.md가 생성되었습니다.
 
 이 방식으로 에이전트가 사용자의 의도를 정확히 반영한 결과물을 생성합니다.
 
-## 디자인 스킬과 --design 플래그의 관계
+## 디자인 스킬 조합과 --design 플래그의 관계
 
-| 상황 | 디자인 스킬 결정 |
-|------|----------------|
-| `--interview` + 질문 A-2 답변 | 인터뷰 답변이 최종 결정 |
-| `--design supanova` (명시적) | 인터뷰 질문 A-2를 건너뜀, 플래그 값 사용 |
-| `--design none` (명시적) | 인터뷰 질문 A-2를 건너뜀, 디자인 스킬 미적용 |
-| 인터뷰 없이 `--execute` (creative+html) | `flags.design=auto` → supanova 자동 적용 |
-| 인터뷰 없이 `--execute` (code) | 디자인 스킬 미적용 |
+| 상황 | 디자인 엔진 | 품질 강화 스킬 |
+|------|-----------|--------------|
+| `--interview` + 질문 A-2 답변 | 인터뷰 답변이 최종 결정 | 인터뷰 질문 6에서 선택 |
+| `--design supanova` (명시적) | 인터뷰 질문 A-2 건너뜀, supanova 사용 | 레시피 권장 스킬 자동 적용 |
+| `--design none` (명시적) | 인터뷰 질문 A-2 건너뜀, 미적용 | 미적용 |
+| 인터뷰 없이 `--execute` (creative+html) | `flags.design=auto` → supanova 자동 | 레시피 1 권장 스킬 자동 적용 |
+| 인터뷰 없이 `--execute` (code+fullstack) | `flags.design=auto` → frontend-design 자동 | 레시피 2 권장 스킬 자동 적용 |
+| 인터뷰 없이 `--execute` (code+api/cli) | 디자인 스킬 미적용 | 미적용 |
+
+### flags 데이터 흐름
+
+```
+인터뷰 Phase A-2 → flags.design (디자인 엔진)
+                 → flags.design_extras (품질 강화 스킬 배열)
+                 → flags.design_recipe (적용된 레시피명)
+                          ↓
+Phase 2.4.1 → 디자인 엔진 WebFetch → .omc/ax/design-skill-context.md
+            → extras 설치 여부 확인 → 설치됨: 주입 / 미설치: 추천
+                          ↓
+Phase 7 → homepage-builder: 엔진 전체 + 품질 강화 주입
+        → visual-architect: 컬러/폰트/레이아웃 규칙 주입
+        → visual-qa: 안티패턴 + 품질 강화 검증 기준 주입
+```
