@@ -373,6 +373,27 @@ const parsed = Schema.safeParse({ ...(body as object), sessionId });
 프론트엔드는 `@source params` 필드를 요청 바디에 포함하지 않습니다.
 상세 규칙: Read `.claude/skills/ax/references/api-contract.md`
 
+### 2.4.2.1 API Fixture 생성
+
+api-contracts.ts 생성 직후, 프론트엔드가 실제 응답 구조를 참조할 수 있도록 응답 예시 파일을 생성합니다:
+
+**생성 파일**: `${PROJECT_DIR}/src/types/api-fixtures.ts`
+
+**포함 내용** (각 Zod 스키마에 대해):
+- 목록 응답 예시 (1-2개 항목, 시드 데이터 기반)
+- 생성 요청 예시 (`Omit<Schema, 'id' | 'createdAt'>`)
+- 빈 상태 응답 예시 (빈 배열 — EmptyState UI 개발용)
+- 유효성 에러 응답 예시 (error + details 배열)
+
+**값 생성 규칙**:
+- 시드 데이터(`prisma/seed.ts`)가 있으면 해당 값 참조
+- 없으면 Zod 스키마의 타입/제약에 맞는 예시 값 생성
+- 외래 키는 시드 데이터의 실제 ID 사용
+- 날짜는 ISO 8601 형식 예시
+
+**에이전트 프롬프트 삽입**:
+- frontend-developer: "API 응답 구조를 추측하지 마세요. `src/types/api-fixtures.ts`를 Read하여 실제 응답 구조를 확인한 뒤 구현하세요. 특히 빈 배열 응답(`emptyListFixture`)으로 EmptyState UI를, 에러 응답(`validationErrorFixture`)으로 에러 UI를 구현하세요."
+
 ### 2.4.3 사용자 플로우 시나리오 정의 (code 도메인 — fullstack/api)
 
 > 적용 조건: `domain_sub_type`이 `fullstack` 또는 `api`이고, backend + frontend 에이전트가 병렬 실행될 때만.
@@ -450,6 +471,26 @@ CRUD 매트릭스를 사전 정의하면 백엔드/프론트엔드 모두 동일
 **에이전트 프롬프트 삽입 규칙:**
 - backend-developer: "`docs/crud-matrix.md`의 모든 '필수=O' 행에 대해 API를 구현하라. 매트릭스에 없는 API는 구현하지 마라."
 - frontend-developer: "`docs/crud-matrix.md`의 모든 '필수=O' 행에 대해 페이지/컴포넌트를 구현하라. 매트릭스의 모든 메뉴를 네비게이션에 포함하라. hooks를 정의만 하고 사용하지 않는 것은 구현이 아니다."
+
+### 2.4.5 CRUD 구현 체크리스트 자동 생성
+
+CRUD 매트릭스의 각 '필수=O' 행에 대해 에이전트별 구체적 구현 체크리스트를 자동 도출합니다.
+
+**생성 파일**: `${PROJECT_DIR}/.omc/ax/crud-checklists.json`
+
+**operation별 체크리스트 템플릿:**
+
+| operation | backend 체크리스트 | frontend 체크리스트 |
+|-----------|-------------------|-------------------|
+| Create | 라우트 핸들러 + Zod 유효성 검증 + 유효성 실패 400 + DB INSERT + 201+id 응답 + try-catch | 생성 버튼→모달 + 폼 필수필드 + 클라이언트 유효성 + 로딩 상태 + 성공 토스트 + 목록 새로고침 + 실패 에러 표시 |
+| Read(목록) | 라우트 핸들러 + 페이지네이션 + 필터링(해당 시) + 200+배열 응답 | 테이블/리스트 + 빈 상태 EmptyState + 로딩 스켈레톤 + 페이지네이션 UI |
+| Read(상세) | 라우트 핸들러 + 404 처리 + 200+객체 응답 | 상세 뷰 + 로딩 상태 + 에러/404 상태 |
+| Update | 라우트 핸들러 + Zod 유효성 + 존재 확인 404 + DB UPDATE + 200 응답 | 수정 버튼→모달 + 기존값 프리필 + 폼 유효성 + 로딩 + 성공 피드백 |
+| Delete | 라우트 핸들러 + 존재 확인 + DB DELETE + 200/204 응답 + cascade(해당 시) | 삭제 버튼 + 확인 다이얼로그 + 목록에서 항목 제거 + 성공 피드백 |
+
+**주입 시점:**
+- Phase 3 에이전트 `<Process>` 섹션에 ".omc/ax/crud-checklists.json을 Read하고 해당 엔티티의 체크리스트를 모두 구현하라" 지시 추가
+- Phase 7 에이전트 프롬프트에 동적 주입: 해당 에이전트 role의 체크리스트만 발췌하여 포함
 
 ### 2.5 산출물 저장
 
