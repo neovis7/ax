@@ -723,19 +723,18 @@ team-architecture.json을 Read하고 다음을 확인합니다:
 }
 ```
 
-**검증 실패 시 자동 수정 루프 (최대 2회):**
+**검증 실패 시 자동 수정 루프:**
 
 ```
 검증 FAIL 발생
-  → 1회차: 실패 항목을 구조화된 피드백으로 정리
+  → execution-policy.json의 max_validation_retries 값까지 수정 루프 실행:
+    → 실패 항목을 구조화된 피드백으로 정리
     → Phase 3/4 에이전트에 SendMessage로 수정 요청 (구체적 수정 지시 포함)
     → 수정된 파일만 재검증 (전체 재생성 X)
     → PASS → 완료
-    → FAIL → 2회차 반복
-  → 2회차 FAIL: 사용자에게 에스컬레이션
-    → `.omc/ax/generation-log.json`의 파일 목록을 보여주고
-    → "수동 수정 / 롤백(생성 파일 삭제) / 유지(부분 결과 보존)" 선택 요청
-    → 롤백 선택 시: generation-log의 `generated_files` 각각 삭제
+  → 최대 횟수 초과 시: execution-policy.json의 on_validation_failure에 따라 처리
+    → "log_and_continue": 실패 항목을 validation-report.json에 기록하고 다음 Phase로 진행
+    → "escalate": 사용자에게 에스컬레이션 (향후 interactive 모드)
 ```
 
 ### 6.4 ARCHITECTURE.md 생성
@@ -815,37 +814,22 @@ AX 에이전트 팀 생성 완료
   - 문제가 있으면 /ax를 다시 실행하세요
 ```
 
-`--execute` 플래그가 있으면 인터뷰 게이트를 거쳐 Phase 7로 진행합니다.
+`--execute` 플래그가 있으면 인터뷰를 거쳐 Phase 7로 진행합니다.
 
-## Phase 6.7: 인터뷰 게이트 (`--execute` 시 자동 판단)
+## Phase 6.7: 인터뷰 (`--execute` 시 자동 실행)
 
 > `--execute` 플래그가 없으면 이 Phase를 건너뜁니다.
+> `--skip-interview` 플래그가 있으면 인터뷰를 건너뛰고 기본값으로 execution-policy.json을 생성합니다 (Phase 6.8).
 
-`--execute` + 다음 조건 중 하나 이상 충족 시, Phase 7 실행 전에 인터뷰를 제안합니다:
-- `domain_type` = `code`
-- `quality_priority` = `safety` 또는 `accuracy`
-- `domain_sub_type` = `fullstack` 또는 `api`
+`--execute` 시 인터뷰를 자동으로 실행합니다 (기존: 선택 질문 → 변경: 자동 실행).
+사용자가 인터뷰를 원하지 않으면 `--skip-interview`를 명시적으로 사용해야 합니다.
 
-**`--interview` 플래그가 이미 있으면**: 인터뷰 게이트를 건너뛰고 바로 인터뷰 프로세스를 실행합니다.
+**`--interview` 플래그가 이미 있으면**: 동일하게 인터뷰 프로세스를 실행합니다.
+**`--skip-interview` 플래그가 있으면**: 인터뷰 없이 기본값으로 Phase 6.8로 진행합니다.
 
-**자동 제안 메시지**:
-```
-이 프로젝트는 {domain_type} 도메인입니다.
-실행 전에 plan과 architecture를 상세하게 설계하면 결과물 품질이 높아집니다.
-
-1) 인터뷰 진행 — 질의응답으로 plan/architecture를 확정한 뒤 실행
-2) 바로 실행 — AI가 자동 판단하여 즉시 실행
-
-선택하세요 (1/2):
-```
-
-사용자가 **1)** 선택 시:
-- Read: `.claude/skills/ax/references/interview-mode.md` — 인터뷰 프로세스 실행
-- 인터뷰 완료 후 `${PROJECT_DIR}/docs/plan.md`, `docs/architecture.md`, `docs/user-flows.md` 생성
-- 사용자 확인 게이트 → 수정 가능 → 확인 후 Phase 7 진행
-
-사용자가 **2)** 선택 시:
-- 기존 무중단 흐름으로 Phase 7 즉시 진행
+인터뷰 프로세스: Read `.claude/skills/ax/references/interview-mode.md`
+인터뷰 완료 후 `${PROJECT_DIR}/docs/plan.md`, `docs/architecture.md`, `docs/user-flows.md` 생성.
+사용자 확인 게이트 → 수정 가능 → 확인 후 Phase 6.8 → Phase 7 진행.
 
 ## Phase 6.8: execution-policy.json 생성
 
