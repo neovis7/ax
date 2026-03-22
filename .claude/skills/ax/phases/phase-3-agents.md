@@ -34,9 +34,13 @@
    - `<Constraints>` → 도메인 특화 제약사항
    - `<Process>` → 도메인 특화 워크플로우 단계
      + `.claude/skills/ax/templates/domain-patterns.md` 섹션 6 "도메인별 에이전트 프로세스 필수 단계"를 Read하고, 해당 도메인의 필수 단계를 <Process>에 반영
-   - `<Anti_Patterns>` → domain-patterns.md 섹션 6의 도메인별 Anti_Patterns 힌트 적용
-     + backend-developer에 반드시 포함: "req.json() 직접 사용 금지, JWT expiresIn 숫자 사용 금지(문자열 '15m' 형식 사용), 환경변수 폴백값 금지(예: process.env.JWT_SECRET || 'secret'), 유틸리티 인라인 중복 금지, Fisher-Yates 셔플 정확 구현(i > 0 조건), Prisma adapter 패턴 필수"
-     + frontend-developer에 반드시 포함: "모든 API 데이터 접근에 ?. 필수, 배열 메서드 앞에 (data ?? []) 필수, useGet 이중 래핑 금지(useGet이 이미 ApiResponse.data를 추출함), 테스트 계정 자체 생성 금지(prisma/seed.ts에서 확인)"
+   - `<Anti_Patterns>` → 다음 라이브러리 파일을 Read하고 해당 에이전트에 적용:
+     + backend 역할: Read `library/anti-patterns/backend-common.md`
+     + frontend 역할: Read `library/anti-patterns/frontend-common.md`
+     + fullstack/api 도메인: 추가로 Read `library/anti-patterns/fullstack-integration.md`
+     + 인증 포함 프로젝트: 추가로 Read `library/anti-patterns/auth-patterns.md`
+     + DB 사용 에이전트: 추가로 Read `library/anti-patterns/database-patterns.md`
+     + 도메인별 추가 안티패턴은 `templates/domain-patterns.md` 섹션 6 참조
    - `<Quality_Gates>` → 도메인 특화 품질 게이트 (검증 가능한 조건)
    - `<Collaboration>` → 선행/후행 에이전트 + 입출력 경로 명시
    - `<Tool_Usage>` → 허용된 도구별 사용 지침
