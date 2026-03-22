@@ -35,6 +35,39 @@ argument-hint: '"도메인 설명" 또는 --here/--execute/--interview/--design 
 > 생성된 프로젝트는 `projects/{project-name}/` 하위에 생성됩니다 (`--here` 시 현재 디렉토리).
 > 중간 아티팩트는 `${PROJECT_DIR}/.omc/ax/`에 저장됩니다.
 
+### Phase 실행 프로토콜
+
+각 Phase 실행 시 다음 순서를 따릅니다:
+1. `phases/phase-{N}-*.md` 파일 존재 확인 (Glob)
+2. **존재** → Read(`phases/phase-{N}-*.md`) — 추출된 Phase 지시사항을 따라 실행
+3. **미존재** → 이 파일 아래의 인라인 Phase 섹션 실행 (기존 동작 유지)
+4. 산출물 생성 + 출력 계약 검증
+5. TaskUpdate(completed) → 다음 Phase
+
+이 프로토콜은 마이그레이션 중 partial state에서도 ax가 정상 동작하도록 보장합니다.
+
+### Phase 파일 매핑
+
+| Phase | 파일 | 핵심 산출물 |
+|-------|------|-----------|
+| 0 | phases/phase-0-init.md | settings.json, TaskCreate |
+| 1 | phases/phase-1-analysis.md | domain-analysis.json |
+| 2 | phases/phase-2-architecture.md | team-architecture.json |
+| 3 | phases/phase-3-agents.md | .claude/agents/*.md |
+| 4 | phases/phase-4-skills.md | .claude/skills/*/SKILL.md |
+| 5 | phases/phase-5-orchestrator.md | CLAUDE.md 오케스트레이션 섹션 |
+| 6 | phases/phase-6-validation.md | validation-report.json |
+| 7 | phases/phase-7-execution.md | 실행 결과물 |
+
+### 조건부 참조 로드
+
+Phase 파일 내부에서 필요 시 추가 참조를 Read합니다:
+- Phase 1.7: `references/domain-research.md` (규제 도메인일 때만)
+- Phase 2.1: `templates/pattern-selection.md` + `templates/domain-patterns.md`
+- Phase 2.4.1: `templates/external-skill-catalog.md`
+- Phase 2.4.2: `references/api-contract.md` (fullstack/api일 때만)
+- Phase 6.7: `references/interview-mode.md` (--execute 시)
+
 ### 실행 규칙 (모든 Phase 공통)
 
 - **자동 실행**: 에이전트 호출 시 `mode: "bypassPermissions"`를 사용합니다 — 사용자 인터럽트 없이 파이프라인이 끊김 없이 실행되도록 하기 위함입니다.
