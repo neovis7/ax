@@ -98,6 +98,7 @@ TaskCreate("Phase 7: 실행") # --execute 플래그 시에만
   - `--design frontend-design` → Anthropic frontend-design 적용
   - `--design none` → 디자인 스킬 자동 적용 비활성화
   - 플래그 없음 → creative/document + html 도메인이면 supanova-design 자동 적용
+- `--skip-interview` 플래그 존재 여부 확인 → `--execute` 시 인터뷰를 건너뛰고 기본값으로 실행
 - 나머지 텍스트를 도메인 설명으로 사용
 
 ### 1.0 프로젝트 디렉토리 결정
@@ -211,7 +212,8 @@ mkdir -p ${PROJECT_DIR}/tests/ax
     "design": "{supanova|frontend-design|none|auto}",
     "design_extras": ["{impeccable|taste-skill|better-icons|make-interfaces-feel-better|...}"],
     "design_recipe": "{레시피명 또는 null — Phase 2.4.1에서 자동 매칭 또는 인터뷰에서 선택}",
-    "ppt_style": "{glassmorphism|dark-premium|gradient-modern|neo-brutalist|3d-isometric|editorial|minimal-swiss|keynote|null}"
+    "ppt_style": "{glassmorphism|dark-premium|gradient-modern|neo-brutalist|3d-isometric|editorial|minimal-swiss|keynote|null}",
+    "skip_interview": "{true|false — --skip-interview 플래그 여부}"
   }
 }
 ```
@@ -844,6 +846,47 @@ AX 에이전트 팀 생성 완료
 
 사용자가 **2)** 선택 시:
 - 기존 무중단 흐름으로 Phase 7 즉시 진행
+
+## Phase 6.8: execution-policy.json 생성
+
+인터뷰 완료 직후 (또는 `--skip-interview` 시 Phase 6.7 직후) 다음 정책 파일을 생성합니다.
+
+**파일 위치**: `${PROJECT_DIR}/.omc/ax/execution-policy.json`
+
+인터뷰에서 수집된 값(PPT 스타일, 디자인 레시피 등)을 반영하고, 수집되지 않은 값은 기본값을 사용합니다:
+
+```json
+{
+  "intervention_mode": "zero",
+  "max_agent_retries": 3,
+  "max_validation_retries": 3,
+  "max_smoke_test_retries": 5,
+  "on_agent_failure": "skip_and_log",
+  "on_validation_failure": "log_and_continue",
+  "on_smoke_failure": "log_and_continue",
+  "max_visual_qa_retries": 3,
+  "on_visual_qa_failure": "skip_and_log",
+  "cost_limit_usd": 50,
+  "ppt_style": "{인터뷰에서 수집 또는 도메인 기본값}",
+  "design_recipe": "{인터뷰에서 수집 또는 자동 매칭}",
+  "skip_interview": false
+}
+```
+
+**`intervention_mode` 동작:**
+- `"zero"` (기본): 모든 에스컬레이션을 자동 결정으로 대체. Phase 6.3의 3지선다 메뉴 삭제, Phase 7의 모든 사용자 질문 삭제.
+- `"interactive"` (향후 확장): 기존 동작 유지 (에스컬레이션 시 사용자에게 질문).
+
+**`cost_limit_usd` 동작:**
+- 기본값 $50. 초과 시 중단하지 않고 로그 기록 + 최종 보고에 경고 포함.
+- `null`로 설정 시 비용 제한 완전 해제.
+
+**`--design` 플래그와의 우선순위:**
+- `--design` 플래그가 명시적으로 지정된 경우 → 플래그 값이 최우선
+- 인터뷰에서 선택한 경우 → 인터뷰 결과 적용
+- 둘 다 없는 경우 → 도메인 기본값 자동 적용
+
+Phase 7의 모든 분기에서 이 파일을 Read하여 자동 결정합니다. 이 파일이 존재하지 않으면 위 기본값으로 런타임 생성합니다.
 
 ## Phase 7: 실행 (`--execute` 전용)
 
