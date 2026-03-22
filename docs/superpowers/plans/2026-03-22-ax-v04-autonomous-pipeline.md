@@ -54,8 +54,12 @@
 | Create | `tests/ax/tools/run_scenario.py` | JSON 시나리오 실행기 (Tier 3) |
 | Create | `tests/ax/scenarios/fullstack-saas.json` | SaaS 풀스택 시나리오 |
 | Create | `tests/ax/scenarios/cli-tool.json` | CLI 도구 시나리오 |
+| Create | `tests/ax/scenarios/presentation-slides.json` | 프레젠테이션 시나리오 |
+| Create | `tests/ax/scenarios/api-microservice.json` | API 마이크로서비스 시나리오 |
+| Create | `tests/ax/scenarios/ecommerce-platform.json` | 이커머스 시나리오 |
+| Create | `tests/ax/scenarios/research-analysis.json` | 리서치 분석 시나리오 |
 | Create | `Makefile` | 프로젝트 루트 테스트 통합 |
-| Modify | `tests/ax/tools/validate_project.py` | 체크포인트 11-14 (P1에서 구현) |
+| Modify | `.claude/skills/ax/tools/validate_project.py` | 체크포인트 11-14 (P1에서 구현) |
 
 ### P3b: 생성 품질 강화 (나머지)
 | Action | File | Purpose |
@@ -68,6 +72,8 @@
 | Create | `.claude/skills/ax/library/base-agents/backend-developer-base.md` | 백엔드 베이스 에이전트 |
 | Create | `.claude/skills/ax/library/base-agents/frontend-developer-base.md` | 프론트엔드 베이스 에이전트 |
 | Create | `.claude/skills/ax/library/base-agents/system-architect-base.md` | 시스템 아키텍트 베이스 |
+| Create | `.claude/skills/ax/library/base-agents/content-writer-base.md` | 콘텐츠 작성 베이스 |
+| Create | `.claude/skills/ax/library/base-agents/data-analyst-base.md` | 데이터 분석 베이스 |
 | Modify | `.claude/skills/ax/SKILL.md` (or `phases/phase-3-agents.md`) | Phase 3 안티패턴 하드코딩 → library Read 참조로 교체, base-agent 매칭 우선순위 추가 |
 
 ---
@@ -369,6 +375,79 @@ SKILL.md에서 `api-fixtures.ts` 문자열이 존재하는지 확인.
 ```bash
 git add .claude/skills/ax/SKILL.md
 git commit -m "feat(ax): Phase 2.4.2.1 API fixture 자동 생성 지시 추가"
+```
+
+---
+
+## Task 6.5: P3a — CRUD 구현 체크리스트 자동 생성 지시 추가
+
+**Files:**
+- Modify: `.claude/skills/ax/SKILL.md:397-447` (Phase 2.4.4 CRUD 매트릭스 직후)
+
+- [ ] **Step 1: Phase 2.4.4 뒤에 CRUD 체크리스트 생성 지시 추가**
+
+SKILL.md Phase 2.4.4 CRUD 매트릭스 섹션 (~line 447) 뒤에 다음을 추가:
+
+```markdown
+### 2.4.5 CRUD 구현 체크리스트 자동 생성
+
+CRUD 매트릭스의 각 '필수=O' 행에 대해 에이전트별 구체적 구현 체크리스트를 자동 도출합니다.
+
+**생성 파일**: `${PROJECT_DIR}/.omc/ax/crud-checklists.json`
+
+**구조:**
+```json
+{
+  "entities": [
+    {
+      "name": "Question",
+      "operations": [
+        {
+          "operation": "Create",
+          "backend_checklist": [
+            "POST /questions 라우트 핸들러",
+            "Zod 스키마로 요청 바디 유효성 검증",
+            "유효성 실패 시 400 + 구체적 에러 메시지 반환",
+            "DB INSERT 실행",
+            "성공 시 201 + 생성된 객체(id 포함) 반환",
+            "try-catch로 DB 에러 핸들링"
+          ],
+          "frontend_checklist": [
+            "생성 버튼 → 모달/페이지 열기",
+            "폼: 필수 필드 표시 + 클라이언트 유효성 에러",
+            "제출 시 로딩 상태 (버튼 비활성화 + 스피너)",
+            "성공 시 토스트/알림 + 목록 자동 새로고침",
+            "실패 시 서버 에러 메시지 표시",
+            "모달 닫기 후 상태 초기화"
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+**operation별 체크리스트 템플릿:**
+- Create: 라우트 + 유효성 + DB INSERT + 201 응답 / 버튼→모달 + 폼 + 로딩 + 피드백
+- Read(목록): 라우트 + 페이지네이션 + 필터링 / 테이블 + 빈 상태 + 로딩
+- Read(상세): 라우트 + 404 처리 / 상세 뷰 + 로딩
+- Update: 라우트 + 유효성 + 존재 확인 + DB UPDATE / 프리필 폼 + 수정 + 피드백
+- Delete: 라우트 + 존재 확인 + DB DELETE / 확인 다이얼로그 + 목록 갱신
+
+**주입 시점:**
+- Phase 3 에이전트 `<Process>` 섹션에 "crud-checklists.json을 Read하고 해당 엔티티의 체크리스트를 모두 구현하라" 지시 추가
+- Phase 7 에이전트 프롬프트에 동적 주입: 해당 에이전트 role의 체크리스트만 발췌
+```
+
+- [ ] **Step 2: 변경 검증**
+
+SKILL.md에서 `crud-checklists.json` 문자열이 존재하는지 확인.
+
+- [ ] **Step 3: 커밋**
+
+```bash
+git add .claude/skills/ax/SKILL.md
+git commit -m "feat(ax): Phase 2.4.5 CRUD 구현 체크리스트 자동 생성 지시 추가"
 ```
 
 ---
@@ -728,9 +807,25 @@ git commit -m "feat(ax): validate_ax.py — ax 스킬 자체 무결성 검증 (T
 
 - [ ] **Step 3: cli-tool.json 시나리오 작성**
 
-최소 시나리오: CLI 도메인 → 파이프라인 패턴 기대.
+code 도메인, domain_sub_type=cli → 파이프라인 패턴, 에이전트 4-6개, cli-developer 필수.
 
-- [ ] **Step 4: Makefile 작성**
+- [ ] **Step 4: presentation-slides.json 시나리오 작성**
+
+document 도메인, domain_sub_type=presentation → 파이프라인+생성-검증, content-researcher + content-writer + slide-builder 필수.
+
+- [ ] **Step 5: api-microservice.json 시나리오 작성**
+
+code 도메인, domain_sub_type=api → 전문가 풀+생성-검증, api-architect + service-developer 필수.
+
+- [ ] **Step 6: ecommerce-platform.json 시나리오 작성**
+
+기존 `tests/ax/scenario-ecommerce.md` 내용을 JSON 형식으로 변환. code+business 복합 도메인.
+
+- [ ] **Step 7: research-analysis.json 시나리오 작성**
+
+research 도메인 → 감독자 패턴, data-collector + data-analyst 필수.
+
+- [ ] **Step 8: Makefile 작성**
 
 ```makefile
 .PHONY: test-all test-ax test-scenarios test-project
@@ -830,7 +925,15 @@ frontmatter(name, role, model) + `<Role>`, `<Process>` (필수 7단계), `<Anti_
 
 기술 스택 선정, 디렉토리 구조, 데이터 모델 설계 프로세스 포함.
 
-- [ ] **Step 4: Phase 3 골든 템플릿 매칭 우선순위 업데이트**
+- [ ] **Step 4: content-writer-base.md 작성**
+
+팩트체크, 출처 명시, 논리 흐름 검증 프로세스 포함. document/creative 도메인용.
+
+- [ ] **Step 5: data-analyst-base.md 작성**
+
+소스 신뢰도 평가, 데이터 최신성 검증, 시각화 선택 기준 포함. research 도메인용.
+
+- [ ] **Step 6: Phase 3 골든 템플릿 매칭 우선순위 업데이트**
 
 phases/phase-3-agents.md의 골든 템플릿 매칭 섹션에:
 ```
