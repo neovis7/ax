@@ -728,6 +728,17 @@ team-architecture.json을 Read하고 다음을 확인합니다:
 
 검증 실패 항목이 있으면 즉시 수정 시도.
 
+**Layer 1 정적 완성도 검증 (code 도메인 — fullstack/api):**
+
+validate_project.py의 체크포인트 11-14를 실행하여 CRUD 코드의 실체를 확인합니다:
+- 체크포인트 11: CRUD 핸들러에 실제 DB 호출이 있는지 (빈 핸들러 검출)
+- 체크포인트 12: 프론트엔드에 폼 컴포넌트가 존재하는지
+- 체크포인트 13: API hook이 정의만 되고 미사용인지 (dead hook 검출)
+- 체크포인트 14: 로딩/에러/빈 상태 UI가 있는지 (경고)
+
+실행: `python3 .claude/skills/ax/tools/validate_project.py ${PROJECT_DIR}`
+FAIL 항목이 있으면 해당 에이전트에 수정 지시 후 재실행.
+
 ### 6.2 시나리오 검증
 
 도메인에 맞는 샘플 작업 3개를 자동 생성하고, 각 작업에 대해:
