@@ -18,7 +18,18 @@
 
 1. **템플릿 로드**:
    - `base_template_path`가 있으면 해당 파일 Read
-   - 없으면 `.claude/skills/ax/templates/agent-skeleton.md` Read
+   - 없으면 아래 매칭 우선순위로 탐색
+
+**골든 템플릿 매칭 우선순위:**
+1. OMC/ECC 에이전트 검색 (기존 — `~/.claude/plugins/cache/*/oh-my-claudecode/*/agents/*.md`)
+2. ax base-agent 라이브러리 (`library/base-agents/{role}-base.md`) — 역할명으로 매칭
+3. `templates/agent-skeleton.md` 폴백
+
+base-agent 로드 시:
+- `<Process>`의 커스터마이즈 포인트를 도메인 맞춤 내용으로 교체
+- `<Anti_Patterns>`의 library Read 지시를 실행하여 안티패턴 주입
+- `<Examples>`는 항상 도메인 맞춤으로 새로 생성
+- `<Role>`은 도메인 특화 미션으로 오버라이드
 
 2. **frontmatter 커스터마이즈**:
    - `name` → 도메인 맞춤 kebab-case 이름 (예: `content-generator`, `data-analyst`)
