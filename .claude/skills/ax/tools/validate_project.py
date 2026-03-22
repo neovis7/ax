@@ -219,6 +219,68 @@ def validate_project(project_dir):
     if hardcoded:
         failures.append(f"하드코딩 색상: {hardcoded[:5]}")
 
+    # 11. CRUD 핸들러 실체 (빈 핸들러 검출)
+    crud_substance_ok = True
+    route_files = glob.glob(os.path.join(project_dir, 'src/**/routes/**/*.ts'), recursive=True) + \
+                  glob.glob(os.path.join(project_dir, 'src/**/routes/**/*.js'), recursive=True)
+    for rf in route_files:
+        with open(rf, 'r') as f:
+            content = f.read()
+        has_mutation = any(kw in content for kw in ['post(', 'put(', 'delete(', '.post(', '.put(', '.delete('])
+        has_db_call = any(kw in content for kw in ['prisma.', 'knex(', 'db.query', 'pool.query', '.create(', '.update(', '.delete(', '.findMany(', '.findUnique(', '.findFirst('])
+        if has_mutation and not has_db_call:
+            crud_substance_ok = False
+            failures.append(f"빈 핸들러 의심: {os.path.basename(rf)} — mutation 핸들러에 DB 호출 없음")
+    checks['crud_handler_substance'] = 'PASS' if crud_substance_ok or not route_files else 'FAIL'
+
+    # 12. 프론트엔드 폼 컴포넌트 (Create/Update용)
+    page_files = glob.glob(os.path.join(project_dir, 'src/**/pages/**/*.tsx'), recursive=True) + \
+                 glob.glob(os.path.join(project_dir, 'src/**/components/**/*.tsx'), recursive=True)
+    form_keywords = ['<form', 'onSubmit', 'handleSubmit', 'useForm', 'FormData']
+    has_any_form = any(
+        any(kw in open(pf, 'r').read() for kw in form_keywords)
+        for pf in page_files
+    ) if page_files else True
+    checks['frontend_form_components'] = 'PASS' if has_any_form else 'FAIL'
+    if not has_any_form and page_files:
+        failures.append("프론트엔드에 폼 컴포넌트가 없음 (Create/Update UI 누락 의심)")
+
+    # 13. API hook 실제 사용 (dead hook 검출)
+    hook_ok = True
+    hook_files = glob.glob(os.path.join(project_dir, 'src/**/hooks/**/*.ts'), recursive=True) + \
+                 glob.glob(os.path.join(project_dir, 'src/**/hooks/**/*.tsx'), recursive=True)
+    for hf in hook_files:
+        with open(hf, 'r') as f:
+            hcontent = f.read()
+        hook_names = re.findall(r'export\s+(?:function|const)\s+(use\w+)', hcontent)
+        for hook in hook_names:
+            found = False
+            for pf in page_files:
+                with open(pf, 'r') as f:
+                    if hook in f.read():
+                        found = True
+                        break
+            if not found:
+                hook_ok = False
+                failures.append(f"Dead hook: {hook} ({os.path.basename(hf)})")
+    checks['hook_usage'] = 'PASS' if hook_ok else 'FAIL'
+
+    # 14. 에러/로딩/빈 상태 UI (경고 — FAIL은 아님)
+    state_warnings = []
+    for pf in page_files[:20]:  # 상위 20개만
+        with open(pf, 'r') as f:
+            content = f.read()
+        bn = os.path.basename(pf)
+        if not any(kw in content for kw in ['isLoading', 'loading', 'Spinner', 'skeleton', 'Skeleton']):
+            state_warnings.append(f"로딩 상태 없음: {bn}")
+        if not any(kw in content for kw in ['isError', 'error', 'Error', 'ErrorBoundary']):
+            state_warnings.append(f"에러 상태 없음: {bn}")
+        if not any(kw in content for kw in ['length === 0', '.length === 0', 'empty', 'Empty', '데이터가 없', 'No data', 'no data']):
+            state_warnings.append(f"빈 상태 없음: {bn}")
+    checks['ui_states'] = 'PASS'  # 경고만, FAIL 아님
+    if state_warnings:
+        failures.extend(state_warnings[:10])
+
     overall = 'PASS' if all(v == 'PASS' for v in checks.values()) else 'FAIL'
     return {
         'project': os.path.basename(project_dir),
