@@ -1,0 +1,23 @@
+{
+  "name": "리서치 분석",
+  "input": {
+    "domain_description": "경쟁사 시장 분석 리서치. 5개 기업 비교 분석 보고서.",
+    "flags": { "execute": false, "here": true }
+  },
+  "expected": {
+    "domain_analysis": {
+      "domain_type": "research"
+    },
+    "team_architecture": {
+      "pattern.primary": ["감독자", "팬아웃/팬인"],
+      "agents_count_range": [5, 8],
+      "required_agents": ["data-collector", "data-analyst"]
+    },
+    "generated_files": {
+      "must_include": [
+        ".claude/agents/data-collector.md",
+        ".claude/agents/data-analyst.md"
+      ]
+    }
+  }
+}
