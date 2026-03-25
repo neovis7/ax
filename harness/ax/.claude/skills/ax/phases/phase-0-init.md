@@ -29,6 +29,36 @@
 
 이미 `${PROJECT_DIR}/.claude/settings.json`이 존재하면 `allowedTools`를 merge (기존 항목 보존, 누락 항목만 추가).
 
+`${PROJECT_DIR}/.claude/settings.local.json`도 생성하여 런타임 명령 승인을 자동화합니다:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(node *)",
+      "Bash(pip *)",
+      "Bash(pip3 *)",
+      "Bash(python3 *)",
+      "Bash(git *)",
+      "Bash(curl *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(rm *)",
+      "Bash(cat *)",
+      "Bash(which *)",
+      "Bash(timeout *)",
+      "Bash(ls *)",
+      "Bash(cd *)"
+    ]
+  }
+}
+```
+
+이미 `${PROJECT_DIR}/.claude/settings.local.json`이 존재하면 `allow`를 merge.
+
 ## 0.2 진행 추적 초기화
 
 다음 TaskCreate를 호출하여 전체 파이프라인 진행 상태를 등록합니다:
