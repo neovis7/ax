@@ -1,0 +1,75 @@
+{
+  "skill_name": "ax",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/ax \"이커머스 플랫폼 - 상품 관리, 주문 처리\"",
+      "expected_output": "code 도메인, 에이전트 7~10개, 전문가 풀 또는 계층적 위임 패턴",
+      "should_trigger": true,
+      "assertions": ["domain_type=code", "agent_count>=7", "visual_chain_present"]
+    },
+    {
+      "id": 2,
+      "prompt": "/ax \"분기 실적 프레젠테이션 슬라이드\"",
+      "expected_output": "document 도메인, 파이프라인+생성-검증 패턴",
+      "should_trigger": true,
+      "assertions": ["domain_type=document", "pattern=파이프라인"]
+    },
+    {
+      "id": 3,
+      "prompt": "/ax \"마케팅 랜딩 페이지 제작\"",
+      "expected_output": "creative(주)+code(부), 생성-검증 패턴, CTA 관련 에이전트",
+      "should_trigger": true,
+      "assertions": ["domain_type=creative", "secondary=code"]
+    },
+    {
+      "id": 4,
+      "prompt": "/ax \"시장 리서치 보고서 작성\"",
+      "expected_output": "research 도메인, 감독자 패턴",
+      "should_trigger": true,
+      "assertions": ["domain_type=research"]
+    },
+    {
+      "id": 5,
+      "prompt": "/ax \"Kubernetes CI/CD 파이프라인 구축\"",
+      "expected_output": "code 도메인, sub_type=devops",
+      "should_trigger": true,
+      "assertions": ["domain_type=code", "sub_type=devops"]
+    },
+    {
+      "id": 6,
+      "prompt": "피보나치 수열을 계산하는 함수를 작성해줘",
+      "expected_output": "ax 스킬이 트리거되지 않아야 함 — 단순 코딩 요청",
+      "should_trigger": false,
+      "assertions": ["no_trigger"]
+    },
+    {
+      "id": 7,
+      "prompt": "이 파일의 버그를 고쳐줘",
+      "expected_output": "ax 스킬이 트리거되지 않아야 함 — 디버깅 요청",
+      "should_trigger": false,
+      "assertions": ["no_trigger"]
+    },
+    {
+      "id": 8,
+      "prompt": "git commit 메시지를 작성해줘",
+      "expected_output": "ax 스킬이 트리거되지 않아야 함 — git 작업",
+      "should_trigger": false,
+      "assertions": ["no_trigger"]
+    },
+    {
+      "id": 9,
+      "prompt": "에이전트 팀을 구성해서 데이터 분석 프로젝트를 설정해줘",
+      "expected_output": "ax 트리거 — near-miss: '에이전트 팀 구성' + '프로젝트 설정' 키워드",
+      "should_trigger": true,
+      "assertions": ["domain_type=research", "triggered_by_description"]
+    },
+    {
+      "id": 10,
+      "prompt": "React 컴포넌트를 최적화해줘",
+      "expected_output": "ax 스킬이 트리거되지 않아야 함 — near-miss: 코드 관련이지만 팀 구성 아님",
+      "should_trigger": false,
+      "assertions": ["no_trigger"]
+    }
+  ]
+}

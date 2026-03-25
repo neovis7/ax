@@ -1,4 +1,28 @@
-projects/
-.omc/
-*.output
+# OS
 .DS_Store
+
+# OMC sessions/state (대용량, 세션별 임시 데이터)
+.omc/sessions/
+.omc/state/
+.omc/notepad.md
+
+# Superpowers state
+.superpowers/
+
+# Build output
+*.output
+
+# Node
+node_modules/
+dist/
+.env
+.env.*
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# IDE
+.vscode/
+.idea/

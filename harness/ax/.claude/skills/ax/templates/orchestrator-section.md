@@ -1,0 +1,66 @@
+## Harness-Generated Team
+
+> 이 섹션은 `/ax`에 의해 자동 생성되었습니다.
+> 생성일: {GENERATION_DATE}
+> 도메인: {DOMAIN_DESCRIPTION}
+> 패턴: {PRIMARY_PATTERN} {SECONDARY_PATTERN_NOTE}
+
+### 에이전트 카탈로그
+
+| 에이전트 | 역할 | 모델 | 트리거 |
+|---------|------|------|--------|
+{AGENT_TABLE_ROWS}
+
+### 위임 규칙
+
+{DELEGATION_RULES}
+
+### API 계약 (backend+frontend 병렬 실행 시)
+
+> 병렬 에이전트 간 API 응답 구조 불일치를 방지하기 위한 규칙
+
+- **계약 파일**: `src/types/api-contracts.ts` — 모든 API 엔드포인트의 요청/응답 Zod 스키마
+- **행동 의도**: 각 엔드포인트의 `@intent` JSDoc을 반드시 읽고, 스키마 형태뿐 아니라 행동 목적에 맞게 구현
+- **상태별 응답**: `z.discriminatedUnion`으로 정의된 상태별 응답 변형을 모두 처리
+- **backend-developer**: API 응답은 반드시 계약 스키마와 `@intent`에 맞춰 구현. 스키마 형태만 맞추고 의도가 다르면 계약 위반.
+- **frontend-developer**: API 호출 결과는 반드시 계약 스키마로 파싱. `@intent`를 읽고 상태별 UI 분기를 구현.
+- **컬럼명 규칙**: DB 컬럼명(snake_case) → API 필드명(camelCase) 변환만 허용. 의미가 다른 이름 사용 금지.
+- **생성 시점**: Phase 1(아키텍처) 완료 후, Phase 2(병렬 구현) 시작 전에 반드시 생성
+- **변경 절차**: API 계약 변경 시 backend + frontend 양쪽에 영향 분석 필수
+
+### 사용자 플로우 (backend+frontend 병렬 실행 시)
+
+> 스키마(데이터 구조)와 별도로, 사용자가 시스템을 사용하는 행동 시나리오를 정의합니다.
+
+- **플로우 파일**: `docs/user-flows.md` — 핵심 사용자 행동의 단계별 API 호출 시퀀스
+- **backend-developer**: 각 API가 사용자 플로우의 어느 단계에서 호출되는지 확인하고, 해당 단계에서 필요한 데이터를 반드시 반환
+- **frontend-developer**: 사용자 플로우의 단계별 시퀀스를 따라 UI를 구현. 이전 단계의 응답 데이터를 다음 단계에 전달하는 방식을 플로우 문서에서 확인
+- **인증 플로우 필수**: 로그인 → 페이지 새로고침 → 세션 유지 확인이 반드시 포함되어야 함
+- **통합 검증 의무**: 병렬 구현 완료 후, 모든 핵심 플로우가 실제로 작동하는지 E2E 스모크 테스트 필수
+
+### 실행 프로토콜
+
+- **패턴**: {PATTERN_DESCRIPTION}
+- **병렬**: 독립 작업은 팬아웃으로 병렬 실행
+- **검증**: {VERIFICATION_POLICY}
+- **통합 검증**: 병렬 에이전트 완료 후 핵심 사용자 플로우 E2E 스모크 테스트 통과 필수
+- **에스컬레이션**: 3회 실패 시 사용자에게 알림
+
+### CRUD 완성도 규칙 (fullstack/api 프로젝트)
+
+> `docs/crud-matrix.md`에 정의된 모든 엔티티의 CRUD 작업이 백엔드 + 프론트엔드 + 메뉴에서 완전히 구현되어야 합니다.
+
+- **매트릭스 파일**: `docs/crud-matrix.md` — 엔티티별 CRUD 작업, 역할, 필수 여부
+- **backend-developer**: 매트릭스의 '필수=O' 행에 대해 모든 API 엔드포인트를 구현. 매트릭스에 없는 API는 구현 금지.
+- **frontend-developer**: 매트릭스의 '필수=O' 행에 대해 모든 페이지/컴포넌트를 구현. **hooks를 정의만 하고 사용하지 않는 것은 미구현으로 간주.**
+- **네비게이션 필수**: 매트릭스의 모든 메뉴 항목이 TopNav/라우터에 등록되어야 함. 메뉴 없이 URL로만 접근 가능한 기능은 미구현으로 간주.
+- **API 경로 일치**: 프론트 hook의 API 경로(메서드 + path)와 백엔드 라우트가 정확히 일치해야 함.
+
+### 최종 배포 게이트
+
+다음 조건을 **모두** 충족해야 배포 승인:
+1. {VERIFICATION_POLICY_GATE} (예: code-reviewer PASS)
+2. 핵심 사용자 플로우 E2E 스모크 테스트 PASS (인증 플로우 포함)
+3. CRUD 매트릭스 완성도 100% (필수=O 행 전수 BE+FE+메뉴 구현)
+4. visual-qa 점수 45/60 이상 (시각화 에이전트 포함 시)
+5. {DOMAIN_SPECIFIC_GATE} (도메인별 추가 조건)

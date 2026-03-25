@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allowedTools": [
+      "Write(*)",
+      "Edit(*)",
+      "Agent(*)",
+      "Bash(*)",
+      "Read(*)",
+      "Grep(*)",
+      "Glob(*)",
+      "TaskCreate(*)",
+      "TaskUpdate(*)",
+      "TaskGet(*)",
+      "TaskList(*)",
+      "SendMessage(*)",
+      "WebFetch(*)",
+      "WebSearch(*)"
+    ]
+  }
+}

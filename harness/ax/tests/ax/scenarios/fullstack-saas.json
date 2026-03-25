@@ -1,0 +1,25 @@
+{
+  "name": "SaaS 풀스택 앱",
+  "input": {
+    "domain_description": "사용자 관리 + 프로젝트 관리 SaaS. 인증, CRUD, 대시보드 포함.",
+    "flags": { "execute": false, "here": true }
+  },
+  "expected": {
+    "domain_analysis": {
+      "domain_type": "code",
+      "domain_sub_type": ["fullstack"],
+      "signals.quality_criticality": ["medium", "high"]
+    },
+    "team_architecture": {
+      "pattern.primary": ["계층적 위임", "생성-검증", "파이프라인"],
+      "agents_count_range": [6, 10],
+      "required_agents": ["backend-developer", "frontend-developer", "code-reviewer"]
+    },
+    "generated_files": {
+      "must_include": [
+        ".claude/agents/backend-developer.md",
+        ".claude/agents/frontend-developer.md"
+      ]
+    }
+  }
+}
