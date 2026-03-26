@@ -26,3 +26,30 @@ __pycache__/
 # IDE
 .vscode/
 .idea/
+
+# Local-only (deer-flow, symlinks, runtime)
+.agents/
+.agent/
+.claude/skills/chart-visualization
+.claude/skills/claude-to-deerflow
+.claude/skills/consulting-analysis
+.claude/skills/data-analysis
+.claude/skills/deep-research
+.claude/skills/find-skills
+.claude/skills/frontend-design
+.claude/skills/github-deep-research
+.claude/skills/image-generation
+.claude/skills/podcast-generation
+.claude/skills/ppt-generation
+.claude/skills/skill-creator
+.claude/skills/surprise-me
+.claude/skills/vercel-deploy
+.claude/skills/video-generation
+.claude/skills/web-design-guidelines
+skills-lock.json
+
+# Generated projects (local execution results)
+projects/
+
+# OMC runtime
+.omc/
