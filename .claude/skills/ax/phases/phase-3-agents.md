@@ -1,5 +1,7 @@
 # Phase 3: 에이전트 정의 생성
 
+> **실행 규칙**: 이 Phase의 모든 서브에이전트 호출 시 `mode: "bypassPermissions"`를 사용합니다. 파일 생성/덮어쓰기 시 사용자에게 확인을 요청하지 않습니다.
+
 ## 3.1 generation-log 초기화
 
 `.omc/ax/generation-log.json` 생성:

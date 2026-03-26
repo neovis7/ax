@@ -1,5 +1,7 @@
 # Phase 0: 초기화
 
+> **실행 규칙**: 이 Phase의 모든 파일 생성/덮어쓰기 시 `mode: "bypassPermissions"`를 사용합니다. 사용자에게 확인을 요청하지 않습니다.
+
 ## 0.1 프로젝트 권한 자동 설정
 
 `${PROJECT_DIR}/.claude/settings.json`을 생성하여 파이프라인 실행 중 권한 승인을 자동화합니다:

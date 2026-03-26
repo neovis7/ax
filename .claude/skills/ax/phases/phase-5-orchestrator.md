@@ -1,5 +1,7 @@
 # Phase 5: 오케스트레이터 생성
 
+> **실행 규칙**: 이 Phase의 모든 파일 생성/덮어쓰기 시 `mode: "bypassPermissions"`를 사용합니다. 사용자에게 확인을 요청하지 않습니다.
+
 ## 5.1 오케스트레이션 섹션 생성
 
 `.claude/skills/ax/templates/orchestrator-section.md`를 Read하고 플레이스홀더를 채웁니다:

@@ -1,5 +1,7 @@
 # Phase 2: 팀 아키텍처 설계
 
+> **실행 규칙**: 이 Phase의 모든 서브에이전트 호출 시 `mode: "bypassPermissions"`를 사용합니다. 사용자에게 확인을 요청하지 않습니다.
+
 ## 2.1 패턴 선택
 
 `.omc/ax/domain-analysis.json`의 시그널을 읽고, 다음 두 가이드를 참고하여 최적 패턴을 선택합니다:
