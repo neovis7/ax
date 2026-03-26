@@ -4,25 +4,53 @@
 
 ## 0.1 프로젝트 권한 자동 설정
 
-`${PROJECT_DIR}/.claude/settings.json`을 생성하여 파이프라인 실행 중 권한 승인을 자동화합니다:
+`${PROJECT_DIR}/.claude/settings.json`과 `${PROJECT_DIR}/.claude/settings.local.json`을 **모두** 생성하여 파이프라인 실행 중 권한 승인을 완전 자동화합니다.
+
+**중요**: 키 이름은 반드시 `"allow"`를 사용합니다 (`"allowedTools"` 사용 금지 — 글로벌 설정과 호환되지 않음).
+
+### settings.json (git에 포함)
 
 ```json
 {
   "permissions": {
-    "allowedTools": [
+    "allow": [
+      "Bash(*)",
       "Write(*)",
       "Edit(*)",
-      "Agent(*)",
-      "Bash(*)",
       "Read(*)",
       "Grep(*)",
-      "Glob(*)"
+      "Glob(*)",
+      "Agent(*)",
+      "TaskCreate(*)",
+      "TaskUpdate(*)",
+      "TaskGet(*)",
+      "TaskList(*)",
+      "TaskOutput(*)",
+      "TaskStop(*)",
+      "ToolSearch(*)",
+      "Skill(*)",
+      "SendMessage(*)",
+      "WebFetch(*)",
+      "WebSearch(*)",
+      "EnterPlanMode(*)",
+      "ExitPlanMode(*)",
+      "NotebookEdit(*)",
+      "mcp__exa__web_search_exa",
+      "mcp__exa__get_code_context_exa",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs",
+      "mcp__plugin_oh-my-claudecode_t__*",
+      "mcp__plugin_playwright_playwright__*"
     ]
   }
 }
 ```
 
-이미 `${PROJECT_DIR}/.claude/settings.json`이 존재하면 `allowedTools`를 merge (기존 항목 보존, 누락 항목만 추가).
+### settings.local.json (git에서 제외, 로컬 전용)
+
+동일한 내용으로 `settings.local.json`도 생성합니다. Claude Code는 `settings.local.json`을 `settings.json`보다 우선 적용하므로, 글로벌 설정의 제한적 `allow` 목록을 확실히 오버라이드합니다.
+
+이미 `${PROJECT_DIR}/.claude/settings.json`이 존재하면 `allow`를 merge (기존 항목 보존, 누락 항목만 추가). `allowedTools` 키가 있으면 `allow`로 마이그레이션합니다.
 
 ## 0.2 진행 추적 초기화
 
