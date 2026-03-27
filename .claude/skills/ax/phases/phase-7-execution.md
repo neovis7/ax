@@ -260,6 +260,28 @@ SKILL.md의 /mnt/ 경로를 다음과 같이 로컬 경로로 치환하세요:
 }
 ```
 
+### Pretendard 폰트 경로 (PDF/PPTX 생성용)
+
+PDF/PPTX 오프라인 렌더링은 CDN이 아닌 로컬 폰트 파일이 필요합니다.
+**프로젝트마다 다운로드하지 않고, 글로벌 위치 1곳을 공유합니다.**
+
+```
+글로벌 폰트 경로: ~/.claude/fonts/pretendard/
+  ├── Pretendard-Regular.ttf
+  ├── Pretendard-Medium.ttf
+  ├── Pretendard-Bold.ttf
+  ├── Pretendard-Regular.otf
+  ├── Pretendard-Medium.otf
+  └── Pretendard-Bold.otf
+```
+
+**사용 규칙:**
+- **HTML/웹**: CDN 사용 (`cdn.jsdelivr.net/gh/orioncactus/pretendard`)
+- **PDF 생성**: `~/.claude/fonts/pretendard/Pretendard-Regular.ttf` 참조
+- **PPTX 생성**: 동일 경로 참조
+- **프로젝트 내 다운로드 금지**: 글로벌 경로가 없으면 1회만 다운로드하여 `~/.claude/fonts/pretendard/`에 저장
+- **에이전트 프롬프트 지시**: "Pretendard 폰트는 ~/.claude/fonts/pretendard/에서 로드하라. 프로젝트 내에 폰트 파일을 다운로드하지 마라."
+
 **deer-flow 미설치 시 폴백:**
 `.agents/skills/ppt-generation/` 미존재 → 기존 html-slide-generator 스킬로 HTML 프레젠테이션 생성 (PPTX 대신 HTML 출력).
 
