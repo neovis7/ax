@@ -66,3 +66,13 @@ triggers: {AGENT_TRIGGERS}
   - 후행 에이전트: {DOWNSTREAM_AGENT} — 이 에이전트가 넘기는 출력과 경로
   - 산출물 경로: {OUTPUT_PATH}
 </Collaboration>
+
+<Progress_Tracking>
+  이 에이전트는 작업 진행률을 `.omc/ax/progress.json`에 기록합니다.
+
+  - 작업 시작: progress.json Read → 이미 완료된 파일 건너뜀 → status를 "in_progress"로 갱신
+  - 파일 생성마다: 즉시 Write (메모리 보관 금지) → completed_files에 추가 → pending에서 제거
+  - 작업 완료: status를 "completed"로 갱신 → last_checkpoint에 요약 기록
+  - 에러 발생: errors에 기록 → status는 "in_progress" 유지
+  - 압축 후 복구: progress.json Read → pending_files부터 재개 → CLAUDE.md 다시 Read
+</Progress_Tracking>

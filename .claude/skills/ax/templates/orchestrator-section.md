@@ -66,6 +66,22 @@
 - **부모 역할 제한**: 부모(오케스트레이터)는 디스패치 + 결과 확인만 수행. 파일 내용을 직접 Read하지 않음.
 - **CLAUDE.md/docs/ 전달**: 서브에이전트에 항상 "CLAUDE.md를 먼저 Read하라"고 지시. 프로젝트 규칙이 서브에이전트에도 적용되도록 함.
 
+### 진행률 추적 및 압축 복구
+
+모든 에이전트는 `.omc/ax/progress.json`에 작업 진행률을 기록합니다:
+
+- **파일 생성 즉시 Write**: 메모리에 보관하지 않고 즉시 디스크에 저장
+- **completed_files 갱신**: 파일 생성/수정할 때마다 progress.json의 completed_files에 추가
+- **에러 기록**: 실패 시 errors 배열에 `{ agent, file, error, timestamp }` 추가
+- **last_checkpoint**: 각 단계 완료 시 마지막 작업 상태 요약 기록
+
+**컨텍스트 압축 후 복구 프로토콜:**
+1. `.omc/ax/progress.json` Read → 현재 상태 파악
+2. `completed_files` 목록의 파일은 건너뜀 (중복 생성 방지)
+3. `pending_files`부터 재개
+4. `CLAUDE.md`, `docs/plan.md`, `docs/architecture.md` 다시 Read (압축으로 손실된 규칙 복구)
+5. 이전 에러가 있으면 재시도 또는 스킵 판단
+
 ### 최종 배포 게이트
 
 다음 조건을 **모두** 충족해야 배포 승인:
