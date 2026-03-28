@@ -2,7 +2,7 @@
 name: frontend-developer-base
 description: 방어적 데이터 접근, 3가지 상태(로딩/에러/빈), 폼 패턴을 포함하는 프론트엔드 베이스 에이전트
 role: executor
-model: claude-sonnet-4-6
+model: claude-opus-4-6
 ---
 
 <Role>

@@ -7,18 +7,30 @@ Output: JSON (validation-report.json 형식)
 import sys, os, re, json, glob
 
 def parse_frontmatter(filepath):
-    """--- YAML --- 블록에서 key: value 추출."""
+    """--- YAML --- 블록에서 key: value 및 YAML 리스트 추출."""
     result = {}
     with open(filepath, 'r') as f:
         content = f.read()
     parts = content.split('---', 2)
     if len(parts) < 3:
         return result
-    for line in parts[1].strip().split('\n'):
+    lines = parts[1].strip().split('\n')
+    i = 0
+    while i < len(lines):
+        line = lines[i]
         if ':' in line:
             key = line.split(':', 1)[0].strip()
             val = line.split(':', 1)[1].strip()
+            if not val:
+                # 다음 줄들이 '  - item' 형식이면 YAML 리스트로 수집
+                items = []
+                while i + 1 < len(lines) and lines[i + 1].strip().startswith('- '):
+                    i += 1
+                    items.append(lines[i].strip().lstrip('- ').strip())
+                if items:
+                    val = ', '.join(items)
             result[key] = val
+        i += 1
     return result
 
 def check_xml_tags(filepath, tags):

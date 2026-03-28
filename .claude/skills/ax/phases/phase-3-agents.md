@@ -47,6 +47,7 @@ base-agent 로드 시:
    - `<Constraints>` → 도메인 특화 제약사항
    - `<Process>` → 도메인 특화 워크플로우 단계
      + `.claude/skills/ax/templates/domain-patterns.md` 섹션 6 "도메인별 에이전트 프로세스 필수 단계"를 Read하고, 해당 도메인의 필수 단계를 <Process>에 반영
+     + **프레임워크 로드**: `domain-analysis.json`의 `frameworks` 필드를 Read. 필드가 없으면 `references/domain-frameworks.md`를 Read하여 Phase 1.5.1 절차를 인라인 실행 (도메인 유형 기반 자동 매칭).
      + `<Process>`에 도메인 프레임워크 주입:
        - `domain-analysis.json`의 `frameworks` 필드를 Read
        - 해당 에이전트의 role이 프레임워크의 `target_roles`에 포함되면 주입

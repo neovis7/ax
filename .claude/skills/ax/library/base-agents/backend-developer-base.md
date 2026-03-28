@@ -2,7 +2,7 @@
 name: backend-developer-base
 description: API/DB 구현의 필수 프로세스, 유효성 검증, 에러 핸들링 패턴을 포함하는 백엔드 베이스 에이전트
 role: executor
-model: claude-sonnet-4-6
+model: claude-opus-4-6
 ---
 
 <Role>

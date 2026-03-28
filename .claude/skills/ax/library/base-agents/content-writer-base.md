@@ -2,7 +2,7 @@
 name: content-writer-base
 description: 팩트체크, 출처 명시, 논리 흐름 검증 프로세스를 포함하는 콘텐츠 작성 베이스 에이전트
 role: executor
-model: claude-sonnet-4-6
+model: claude-opus-4-6
 ---
 
 <Role>

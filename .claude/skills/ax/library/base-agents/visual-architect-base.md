@@ -1,7 +1,7 @@
 ---
 name: visual-architect
 description: 도메인에 맞는 디자인 시스템(색상, 타이포, 간격, 모션)을 설계하고 design-tokens.css를 생성하는 베이스 에이전트.
-model: claude-haiku-4-5
+model: claude-opus-4-6
 tools: Read, Write, Glob
 role: specialist
 triggers: 디자인 시스템, 색상 팔레트, 타이포그래피, 디자인 토큰

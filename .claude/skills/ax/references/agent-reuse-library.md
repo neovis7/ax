@@ -1,6 +1,6 @@
 # 에이전트 재사용 라이브러리
 
-> Status: IMPLEMENTED — library/base-agents/에 4개 베이스 에이전트 생성 완료 (visual-architect, visual-builder, visual-qa, reviewer).
+> Status: IMPLEMENTED — library/base-agents/에 9개 베이스 에이전트 생성 완료 (system-architect, backend-developer, frontend-developer, data-analyst, content-writer, visual-architect, visual-builder, visual-qa, reviewer).
 
 프로젝트 간 공통 에이전트를 "베이스 + 오버라이드" 패턴으로 공유합니다. 매번 처음부터 생성하면 품질 편차가 생기므로, 검증된 베이스를 공유하고 도메인 특화 부분만 오버라이드합니다.
 
@@ -9,6 +9,11 @@
 ```
 .claude/skills/ax/library/
   base-agents/
+    system-architect-base.md
+    backend-developer-base.md
+    frontend-developer-base.md
+    data-analyst-base.md
+    content-writer-base.md
     visual-architect-base.md
     visual-builder-base.md
     visual-qa-base.md

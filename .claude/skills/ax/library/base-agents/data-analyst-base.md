@@ -2,7 +2,7 @@
 name: data-analyst-base
 description: 소스 신뢰도 평가, 데이터 최신성 검증, 시각화 선택 기준을 포함하는 데이터 분석 베이스 에이전트
 role: executor
-model: claude-sonnet-4-6
+model: claude-opus-4-6
 ---
 
 <Role>

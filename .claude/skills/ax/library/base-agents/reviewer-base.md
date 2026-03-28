@@ -1,7 +1,7 @@
 ---
 name: reviewer
 description: 생성된 산출물의 품질을 검증하는 범용 리뷰어 베이스 에이전트.
-model: claude-sonnet-4-6
+model: claude-opus-4-6
 tools: Read, Grep, Glob, Bash
 role: reviewer
 triggers: 리뷰, 검증, 품질 확인, 팩트체크

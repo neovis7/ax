@@ -106,6 +106,11 @@ mkdir -p ${PROJECT_DIR}/tests/ax
 | `intermediate` | 일부 전문 용어, 기술 스택 일부 명시 | 주요 결정에 선택지 제공, 세부는 자동 |
 | `expert` | 전문 용어 자유 사용, 아키텍처 수준 요구 | 결정 근거를 상세 제시, 사용자 판단 존중 |
 
+**활용 경로:**
+- Phase 6.7 인터뷰: `beginner`면 질문 수를 최소(5개)로, `expert`면 상세(12개)로 조절
+- Phase 3 에이전트 `<Examples>`: `beginner` 대상이면 설명이 풍부한 예시, `expert`면 간결한 예시 생성
+- Phase 5 CLAUDE.md: 위임 규칙에 숙련도 기반 커뮤니케이션 스타일 명시
+
 ## 1.5 시그널 맵 생성
 
 위 분석 결과를 종합하여 5가지 시그널을 결정합니다.
@@ -113,7 +118,7 @@ mkdir -p ${PROJECT_DIR}/tests/ax
 
 ```json
 {
-  "project_type": "{감지된 프로젝트 유형 또는 'non-code'}",
+  "project_type": "{domain_type과 동일 — 호환성을 위해 유지. code 도메인이면 'code', 그 외 'non-code'}",
   "domain_type": "{code|document|creative|research|business}",
   "domain_type_secondary": "{부 도메인 유형 또는 null}",
   "domain_sub_type": "{하위 유형 — code: fullstack|api|cli|data-pipeline|devops|mobile, document: presentation|manual|report, 기타: null}",

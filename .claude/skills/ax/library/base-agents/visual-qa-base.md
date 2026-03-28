@@ -1,7 +1,7 @@
 ---
 name: visual-qa
 description: 생성된 시각물의 품질을 60점 루브릭(6축)으로 정량 평가하는 베이스 에이전트.
-model: claude-sonnet-4-6
+model: claude-opus-4-6
 tools: Read, Grep, Glob, Bash
 role: reviewer
 triggers: 시각 검증, 디자인 리뷰, 품질 평가, 시각 QA

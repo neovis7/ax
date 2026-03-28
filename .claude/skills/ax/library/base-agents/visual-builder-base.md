@@ -1,7 +1,7 @@
 ---
 name: visual-builder
 description: SVG 차트, 인라인 아이콘, AI 생성 이미지 등 시각 자산을 생성하는 베이스 에이전트.
-model: claude-sonnet-4-6
+model: claude-opus-4-6
 tools: Read, Write, Edit, Bash, Grep, Glob
 role: executor
 triggers: 차트 생성, 아이콘, 인포그래픽, 이미지 생성, 시각화
