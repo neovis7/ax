@@ -90,6 +90,22 @@ mkdir -p ${PROJECT_DIR}/tests/ax
 4. **인터랙션 플로우**: 사용자가 수행할 액션 목록 (클릭 → 폼 제출, 모달 열기, 외부 링크 등)
 5. **전환 경로**: CTA → 최종 전환까지의 전체 경로 (예: CTA 클릭 → 모달 → 이메일 입력 → 제출 → 확인)
 
+## 1.4.5 사용자 숙련도 감지
+
+사용자의 도메인 설명에서 숙련도 수준을 추론합니다:
+
+**분석 기준:**
+- **용어 수준**: 전문 용어 사용 빈도 (예: "REST API" vs "서버 만들어줘")
+- **요구사항 구체성**: 기술 스택 명시 여부 (예: "Next.js + Prisma + PostgreSQL" vs "웹사이트")
+- **질문 복잡도**: 아키텍처 수준 요구 vs 기능 수준 요구
+
+**숙련도 레벨:**
+| 레벨 | 신호 | 커뮤니케이션 조정 |
+|------|------|-----------------|
+| `beginner` | 일상 용어, 기술 스택 미명시, 기능 수준 요구 | 선택지를 좁혀서 제안, 기술 결정을 자동으로 |
+| `intermediate` | 일부 전문 용어, 기술 스택 일부 명시 | 주요 결정에 선택지 제공, 세부는 자동 |
+| `expert` | 전문 용어 자유 사용, 아키텍처 수준 요구 | 결정 근거를 상세 제시, 사용자 판단 존중 |
+
 ## 1.5 시그널 맵 생성
 
 위 분석 결과를 종합하여 5가지 시그널을 결정합니다.
@@ -106,6 +122,7 @@ mkdir -p ${PROJECT_DIR}/tests/ax
   "domain_verbs": ["{추출된 동사들}"],
   "io_types": ["{입출력 형태들}"],
   "quality_priority": "{accuracy|speed|creativity|safety}",
+  "user_proficiency": "{beginner|intermediate|expert}",
   "output_format": "{html|pdf|code|dashboard|mixed}",
   "signals": {
     "task_dependency": "{sequential|parallel|mixed}",

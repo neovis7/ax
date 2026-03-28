@@ -57,8 +57,8 @@ argument-hint: '"도메인 설명" 또는 --here/--execute/--interview/--design 
 | 3 | `phases/phase-3-agents.md` | .claude/agents/*.md |
 | 4 | `phases/phase-4-skills.md` | .claude/skills/*/SKILL.md |
 | 5 | `phases/phase-5-orchestrator.md` | CLAUDE.md 오케스트레이션 섹션 |
-| 6 | `phases/phase-6-validation.md` | validation-report.json, ARCHITECTURE.md, 시나리오, 인터뷰(--execute), execution-policy.json |
-| 7 | `phases/phase-7-execution.md` | 실행 결과물, 3-Layer 검증, 최종 보고 |
+| 6 | `phases/phase-6-validation.md` | validation-report.json (skill_quality 포함), ARCHITECTURE.md, 시나리오, 인터뷰(--execute), execution-policy.json |
+| 7 | `phases/phase-7-execution.md` | 실행 결과물, 3-Layer 검증, boundary-report.json, 최종 보고 |
 
 ### 조건부 참조 로드
 
@@ -70,9 +70,17 @@ Phase 파일 내부에서 필요 시 추가 참조를 Read합니다:
 - Phase 2.4.2: `references/api-contract.md` (fullstack/api일 때만)
 - Phase 3.2: `library/base-agents/{role}-base.md` + `library/anti-patterns/{role}.md`
 - Phase 6.7: `references/interview-mode.md` (--execute 시)
+- Phase 4.1: `references/skill-writing-guide.md` (커스텀 스킬 생성 시)
+- Phase 6.1.5: `references/skill-testing-guide.md` (커스텀 스킬 검증 시)
+- Phase 7.X: `references/qa-boundary-guide.md` (code+fullstack/api 실행 시)
+- Phase 2.2.1: `references/team-examples.md` (패턴 선택 참고)
 
 ## 확장 기능 (상세는 references/ 참조)
 
 - **인터뷰 모드** (`--interview`): Read `references/interview-mode.md`
 - **에이전트 재사용 라이브러리**: Read `references/agent-reuse-library.md`
 - **마켓플레이스 통합**: Read `references/marketplace.md`
+- **스킬 작성 가이드**: Read `references/skill-writing-guide.md`
+- **스킬 테스트 가이드**: Read `references/skill-testing-guide.md`
+- **QA 경계면 검증**: Read `references/qa-boundary-guide.md`
+- **팀 구성 예제**: Read `references/team-examples.md`

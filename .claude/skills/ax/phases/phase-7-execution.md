@@ -689,6 +689,46 @@ TeamDelete 후 status를 `"completed"` 또는 `"skipped"`로 갱신합니다.
   [{ "iteration": 1, "layer": "Layer 2", "error": "POST /api/quizzes → 500", "fix_applied": "quiz.ts: params 캐스팅", "result": "PASS" }]
   ```
 
+## 7.2.6 통합 정합성 검증 (Integration Coherence Verification)
+
+> 적용 조건: `domain_sub_type`이 `fullstack` 또는 `api`이고, backend + frontend 에이전트가 모두 실행된 경우.
+> 상세 절차: Read `.claude/skills/ax/references/qa-boundary-guide.md`
+> 실행 시점: visual-qa 완료 후, 최종 보고 전.
+
+개별 에이전트가 "올바르게" 구현해도 **경계면에서 계약이 어긋나는** 결함을 검증합니다.
+TypeScript 제네릭 캐스팅, `npm run build` 통과 등으로 가려지는 런타임 결함을 잡습니다.
+
+**검증 영역 (우선순위 순):**
+
+1. **API 응답 ↔ 프론트 훅 타입 교차 검증**
+   - 각 API route의 `NextResponse.json()` shape과 대응 훅의 `fetchJson<T>` 타입 비교
+   - 래핑 응답(`{ data: [...] }`) unwrap 여부, snake_case↔camelCase 변환 일관성 확인
+   - 즉시 응답(202 Accepted)과 최종 결과의 shape 구분 확인
+
+2. **파일 경로 ↔ 링크/라우터 경로 매핑**
+   - `src/app/` 하위 page 파일 URL과 코드 내 모든 `href`, `router.push()`, `redirect()` 대조
+   - route group `(name)` URL 제거 처리 확인
+
+3. **상태 전이 완전성 추적**
+   - STATE_TRANSITIONS 맵의 모든 전이가 코드에서 실행되는지 확인 (죽은 전이)
+   - 코드의 모든 `.update({ status })` 패턴이 맵에 정의되어 있는지 확인 (무단 전이)
+
+4. **API 엔드포인트 ↔ 프론트 훅 1:1 매핑**
+   - 모든 API route에 대응 훅이 존재하고 실제 호출되는지 확인
+   - "사용 안 됨" API가 의도적인지 판단
+
+**실행 방법:**
+- `general-purpose` 서브에이전트로 실행 (Explore 아님 — Grep/스크립트 실행 필요)
+- 에이전트 프롬프트에 "양쪽 동시 읽기" 원칙 주입: API route **와** 대응 훅을 반드시 동시에 Read
+- 검증 결과를 `${PROJECT_DIR}/.omc/ax/boundary-report.json`에 저장
+
+**결과 처리:**
+- PASS: 모든 경계면 검증 통과 → 최종 보고에 "통합 정합성: PASS" 표시
+- FAIL: 불일치 발견 → execution-policy.json의 `on_smoke_failure` 정책에 따라 처리
+  - `"log_and_continue"`: 경고 목록을 최종 보고에 포함하고 진행
+  - `"skip_and_log"`: 경고만 기록
+- 자동 수정: FAIL 항목 중 명확한 수정이 가능한 경우 (예: 누락된 import), 해당 에이전트에 SendMessage로 수정 요청 (max_smoke_test_retries 적용)
+
 ## 7.3 에러 복구
 
 에이전트 호출 실패 시 3단계 에스컬레이션 — 동일 프롬프트로 재시도하면 같은 이유로 실패할 가능성이 높으므로, 단순화가 핵심입니다.
