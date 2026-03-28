@@ -36,7 +36,7 @@ base-agent 로드 시:
 2. **frontmatter 커스터마이즈**:
    - `name` → 도메인 맞춤 kebab-case 이름 (예: `content-generator`, `data-analyst`)
    - `description` → 도메인 맞춤 설명 (역할 + 언제 사용하는지 포함)
-   - `model` → 유효한 모델 ID만 사용: `claude-sonnet-4-6`, `claude-opus-4-6`, `claude-haiku-4-5` (구 ID인 claude-sonnet-4-5, claude-opus-4-5 등은 사용 금지 — validate_project.py에서 FAIL 처리됨)
+   - `model` → 모든 에이전트에 `claude-opus-4-6` 사용. 유효 ID: `claude-opus-4-6`, `claude-sonnet-4-6`, `claude-haiku-4-5` (구 ID인 claude-sonnet-4-5, claude-opus-4-5 등은 사용 금지 — validate_project.py에서 FAIL 처리됨)
    - `tools` → 역할에 필요한 도구만 (executor: 전체, reviewer: Read/Grep/Glob만)
    - `role` → team-architecture에서 결정된 역할
    - `triggers` → 도메인 특화 키워드 (비어있으면 안 됨 — 최소 3개 키워드 포함)
