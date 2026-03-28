@@ -47,6 +47,11 @@ base-agent 로드 시:
    - `<Constraints>` → 도메인 특화 제약사항
    - `<Process>` → 도메인 특화 워크플로우 단계
      + `.claude/skills/ax/templates/domain-patterns.md` 섹션 6 "도메인별 에이전트 프로세스 필수 단계"를 Read하고, 해당 도메인의 필수 단계를 <Process>에 반영
+     + `<Process>`에 도메인 프레임워크 주입:
+       - `domain-analysis.json`의 `frameworks` 필드를 Read
+       - 해당 에이전트의 role이 프레임워크의 `target_roles`에 포함되면 주입
+       - 필수 프레임워크: `<Process>` 마지막 단계 + 1에 "도메인 프레임워크 적용 (필수):" 추가, 각 프레임워크의 `process_rule` 나열
+       - 권장 프레임워크 (selected=true): 같은 위치에 "도메인 프레임워크 적용 (권장):" 추가
    - `<Anti_Patterns>` → 다음 라이브러리 파일을 Read하고 해당 에이전트에 적용:
      + backend 역할: Read `library/anti-patterns/backend-common.md`
      + frontend 역할: Read `library/anti-patterns/frontend-common.md`
@@ -55,6 +60,10 @@ base-agent 로드 시:
      + DB 사용 에이전트: 추가로 Read `library/anti-patterns/database-patterns.md`
      + 도메인별 추가 안티패턴은 `templates/domain-patterns.md` 섹션 6 참조
    - `<Quality_Gates>` → 도메인 특화 품질 게이트 (검증 가능한 조건)
+   - `<Quality_Gates>`에 도메인 프레임워크 검증 조건 주입:
+     + `frameworks.must`의 `quality_gate`가 null이 아닌 항목: "[필수] {name} 준수: {quality_gate}. 미준수 시 FAIL." 추가
+     + `frameworks.should`의 selected=true 항목: "[권장] {name}: {process_rule}. 미적용 시 경고." 추가
+     + reviewer 역할 에이전트에만 주입 (executor는 <Process>로 충분)
    - `<Collaboration>` → 선행/후행 에이전트 + 입출력 경로 명시
    - `<Tool_Usage>` → 허용된 도구별 사용 지침
 

@@ -133,6 +133,63 @@ mkdir -p ${PROJECT_DIR}/tests/ax
 }
 ```
 
+## 1.5.1 도메인 프레임워크 매칭
+
+> 적용 조건: 항상 실행.
+> 참조: Read `.claude/skills/ax/references/domain-frameworks.md`
+
+`domain-frameworks.md`를 Read하고, `domain_type` + 도메인 설명 키워드로 해당 프레임워크를 매칭합니다:
+
+1. **필수 프레임워크 자동 선택**: `domain_type`에 해당하는 "필수" 행을 모두 선택
+2. **복합 도메인 처리**: `domain_type_secondary`가 있으면 해당 도메인의 필수도 추가
+3. **키워드 매칭**: 도메인 설명에서 교육/법률/라이프/운영/전문 키워드를 감지하면 해당 도메인 프레임워크도 추가
+4. **권장 프레임워크 추출**: 매칭된 도메인의 "권장" 행을 모두 추출
+
+## 1.5.2 권장 프레임워크 사용자 선택
+
+> `--skip-interview` 시: 권장 프레임워크를 전부 포함하고 이 단계를 건너뜁니다.
+
+권장 프레임워크가 1개 이상이면 사용자에게 다중선택 질문을 합니다:
+
+1. 필수 프레임워크 목록을 `✓` 표시로 출력 (자동 적용됨을 안내)
+2. 권장 프레임워크 목록을 번호로 출력 (이름 + 설명)
+3. Opus 추천을 생성하여 함께 표시:
+   - domain-analysis.json의 도메인 설명, domain_verbs, quality_priority를 분석
+   - 추천할 권장 프레임워크 번호 + 추천 이유 2-3문장
+4. 사용자 선택을 받아 적용
+
+결과를 `domain-analysis.json`의 `frameworks` 필드에 저장:
+
+```json
+{
+  "frameworks": {
+    "must": [
+      {
+        "name": "{프레임워크명}",
+        "description": "{설명}",
+        "injection": {
+          "target_roles": ["{역할들}"],
+          "process_rule": "{적용 규칙}",
+          "quality_gate": "{검증 조건}"
+        }
+      }
+    ],
+    "should": [
+      {
+        "name": "{프레임워크명}",
+        "description": "{설명}",
+        "selected": true,
+        "injection": {
+          "target_roles": ["{역할들}"],
+          "process_rule": "{적용 규칙}",
+          "quality_gate": null
+        }
+      }
+    ]
+  }
+}
+```
+
 ## 1.6 출력 계약 검증
 
 domain-analysis.json을 Read하고 다음 필수 필드를 확인합니다:
@@ -141,6 +198,7 @@ domain-analysis.json을 Read하고 다음 필수 필드를 확인합니다:
 - `signals.quality_criticality` ∈ {low, medium, high}
 - `domain_verbs` 배열 길이 >= 2
 - `flags.execute`, `flags.here` 존재
+- `frameworks.must` 배열 길이 >= 1
 
 누락 필드가 있으면 도메인 설명에서 재추론하여 보정 후 다음 Phase로 진행.
 

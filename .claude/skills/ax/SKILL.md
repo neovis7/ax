@@ -64,6 +64,7 @@ argument-hint: '"도메인 설명" 또는 --here/--execute/--interview/--design 
 
 Phase 파일 내부에서 필요 시 추가 참조를 Read합니다:
 - Phase 1.7: `references/domain-research.md` (규제 도메인일 때만)
+- Phase 1.5.1: `references/domain-frameworks.md` (항상)
 - Phase 2.1: `templates/pattern-selection.md` + `templates/domain-patterns.md`
 - Phase 2.4.1: `templates/external-skill-catalog.md`
 - Phase 2.4.2: `references/api-contract.md` (fullstack/api일 때만)
