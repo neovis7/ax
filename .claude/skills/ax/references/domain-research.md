@@ -10,7 +10,9 @@
 
 **절차:**
 
-1. **리서치 에이전트 디스패치**: `document-specialist` 에이전트를 사용하여 도메인 핵심 지식 수집
+1. **리서치 에이전트 디스패치**: general-purpose 에이전트(`subagent_type` 생략)를 사용하여 도메인 핵심 지식 수집
+   - `document-specialist`는 Write/Edit가 비허용이므로 사용 금지 — 리서치 결과를 파일로 저장할 수 없음
+   - `mode: "bypassPermissions"`로 디스패치하여 WebSearch + Write 모두 허용
    - 규제 원문, 가이던스 문서, 업계 표준
    - 실사/감사 위반 사례, 흔한 지적 사항
    - 모범 사례, 실무 시나리오
