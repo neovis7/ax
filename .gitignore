@@ -48,6 +48,9 @@ __pycache__/
 .claude/skills/web-design-guidelines
 skills-lock.json
 
+# Duplicate ax copy (루트와 동일한 복사본 — 생성 금지)
+harness/
+
 # Generated projects (local execution results)
 projects/
 
