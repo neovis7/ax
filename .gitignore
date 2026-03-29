@@ -49,7 +49,9 @@ __pycache__/
 skills-lock.json
 
 # Duplicate ax copy (루트와 동일한 복사본 — 생성 금지)
+# 주의: 다른 PC에서도 `git rm -r --cached harness/` 실행 필요
 harness/
+harness/ax/
 
 # Generated projects (local execution results)
 projects/

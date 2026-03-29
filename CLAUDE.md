@@ -76,3 +76,5 @@ make test-project PROJECT=path  # Tier 1: 생성 프로젝트 검증
 - 스킬/에이전트 마크다운은 Claude Code 공식 스키마 준수
 - 기존 프로젝트 파일과 충돌 시 자동 덮어쓰기 (무중단 원칙)
 - 인터뷰 이후 무개입 — 모든 분기는 execution-policy.json으로 자동 결정
+- **`harness/` 디렉토리 생성 금지**: ax 코드는 루트 `.claude/skills/ax/`에만 존재. `harness/ax/` 복사본을 절대 만들지 않음
+- **Pretendard 폰트 로컬 다운로드 금지**: `~/.claude/fonts/pretendard/` 글로벌 경로 참조. 프로젝트 내 폰트 파일 저장 금지
