@@ -17,7 +17,7 @@
 
 **공통 규칙:**
 - 모든 팀에 최소 1개 executor + 1개 reviewer 포함
-- 모든 팀에 시각화 에이전트 3인조 기본 포함: `visual-architect`(haiku), `visual-builder`(sonnet), `visual-qa`(sonnet)
+- 모든 팀에 시각화 에이전트 3인조 기본 포함: `visual-architect`(opus), `visual-builder`(opus), `visual-qa`(opus)
 - 에이전트 수 상한: 최대 10개 (시각화 3인조 포함)
 
 **부 도메인 병합 규칙** (domain_type_secondary가 존재할 때):
